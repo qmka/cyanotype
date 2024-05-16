@@ -3,13 +3,14 @@ from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR
 
 
 class Action:
-    def __init__(self, number, parent_scene, text):
+    def __init__(self, number, parent_scene, target_scene, text):
         self.x = 50
         self.y = 0
         self.color = TEXT_COLOR
         self.text = text
         self.id = number
         self.parent_scene = parent_scene
+        self.target_scene = target_scene
 
         self.is_hovered = False
 
@@ -53,7 +54,7 @@ class Action:
     def check_hover(self, x, y):
         # check coords of top left corner of action text
         top_left_x = self.x
-        top_left_y = self.y + self.height / 2 - 10
+        top_left_y = self.y  # + self.height / 2 - 10
 
         # check cursor is inside action text area
         if top_left_x < x < top_left_x + self.width + 10 and \

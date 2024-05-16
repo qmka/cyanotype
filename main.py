@@ -1,8 +1,10 @@
 import arcade
 from engine.settings import SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH, DESCRIPTION_HEIGHT
 from engine.settings import CHARACTER_WIDTH, CHARACTER_HEIGHT, BACKGROUND_COLOR, TEXT_COLOR
+from engine.settings import START_SCENE_ID
 from classes.scene import Scene
 from classes.action import Action
+from engine.utils import json_to_dict
 
 
 def filter_actions_by_scene_id(actions_list, scene_id):
@@ -23,22 +25,22 @@ class GameWindow(arcade.Window):
         self.strength = 10
         self.defense = 5
 
-        scenes = [
-            Scene(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt "),
-            Scene(1, "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea ")
-        ]
+        # get scenes
+        raw_scenes = json_to_dict("content/scenes.json")
+        scenes = []
+        for s in raw_scenes["scenes"]:
+            scenes.append(Scene(s["id"], s["description"]))
 
-        actions = [
-            Action(0, 0, "Пустое действие"),
-            Action(1, 0, "Переход в сцену 1"),
-            Action(2, 1, "Возврат в сцену 0"),
-            Action(3, 1, "Ещё одно пустое действие")
-        ]
+        # get actions
+        raw_actions = json_to_dict("content/actions.json")
+        actions = []
+        for a in raw_actions["actions"]:
+            actions.append(Action(a["id"], a["parent"], a["target"], a["text"]))
 
         self.scenes = scenes
-
-        self.current_scene_id = 0
         self.actions = actions
+        self.current_scene_id = START_SCENE_ID
+        self.current_scene_actions = filter_actions_by_scene_id(self.actions, self.current_scene_id)
 
     def on_draw(self):
         arcade.start_render()
@@ -52,7 +54,7 @@ class GameWindow(arcade.Window):
             BACKGROUND_COLOR
         )
         current_scene = self.scenes[self.current_scene_id]
-        current_scene_actions = filter_actions_by_scene_id(self.actions, current_scene.id)
+        self.current_scene_actions = filter_actions_by_scene_id(self.actions, current_scene.id)
         current_scene.draw()
         scene_desc_height = current_scene.height
 
@@ -61,7 +63,7 @@ class GameWindow(arcade.Window):
                          anchor_x="left",
                          anchor_y="top")
 
-        for index, action in enumerate(current_scene_actions):
+        for index, action in enumerate(self.current_scene_actions):
             action.draw(SCREEN_HEIGHT - scene_desc_height - 150 - 40 * index)
 
         # Рисуем правую область с характеристиками персонажа
@@ -83,23 +85,12 @@ class GameWindow(arcade.Window):
             action.check_hover(x, y)
 
     def on_mouse_press(self, x, y, action, modifiers):
-        for idx, btn in enumerate(self.actions):
-            top_left_x = btn.x
-            top_left_y = btn.y + btn.height / 2 - 10
-            if top_left_x < x < top_left_x + btn.width + 10 and top_left_y - btn.height < y < top_left_y:
-                if idx == 0:
-                    print("Нажата кнопка 0")
-                    self.current_scene_id = 0
-                elif idx == 1:
-                    print("Нажата кнопка 1")
-                    self.current_scene_id = 1
-                elif idx == 2:
-                    print("Нажата кнопка 2")
-                    self.current_scene_id = 0
-                elif idx == 3:
-                    print("Нажата кнопка 3")
-                    self.current_scene_id = 1
-
+        for ac in self.current_scene_actions:
+            top_left_x = ac.x
+            top_left_y = ac.y + ac.height / 2 - 10
+            if top_left_x < x < top_left_x + ac.width + 10 and top_left_y - ac.height < y < top_left_y:
+                print(f"Выбран action id {ac.id}")
+                self.current_scene_id = ac.target_scene
 
 
 def main():
