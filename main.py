@@ -4,6 +4,7 @@ from engine.settings import CHARACTER_WIDTH, CHARACTER_HEIGHT, BACKGROUND_COLOR,
 from engine.settings import START_SCENE_ID
 from classes.scene import Scene
 from classes.action import Action
+from classes.stat import Stat
 from engine.utils import json_to_dict
 
 
@@ -19,6 +20,9 @@ class GameWindow(arcade.Window):
 
         arcade.load_font("fonts/FiraCode-SemiBold.ttf")
 
+        hero_portrait_image_path = "media/images/hero.png"
+        self.hero_portrait = arcade.Sprite(hero_portrait_image_path)
+
         # Определение начальных характеристик персонажа
         self.character_name = "Hero"
         self.health = 100
@@ -28,8 +32,8 @@ class GameWindow(arcade.Window):
         # get scenes
         raw_scenes = json_to_dict("content/scenes.json")
         scenes = []
-        for s in raw_scenes["scenes"]:
-            scenes.append(Scene(s["id"], s["description"]))
+        for a in raw_scenes["scenes"]:
+            scenes.append(Scene(a["id"], a["description"]))
 
         # get actions
         raw_actions = json_to_dict("content/actions.json")
@@ -37,8 +41,16 @@ class GameWindow(arcade.Window):
         for a in raw_actions["actions"]:
             actions.append(Action(a["id"], a["parent"], a["target"], a["text"]))
 
+        # get stats
+        raw_stats = json_to_dict("content/stats.json")
+        stats = []
+        for a in raw_stats["stats"]:
+            stats.append(Stat(a["id"], a["text"], a["value"]))
+
+        # config game
         self.scenes = scenes
         self.actions = actions
+        self.stats = stats
         self.current_scene_id = START_SCENE_ID
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, self.current_scene_id)
 
@@ -65,20 +77,17 @@ class GameWindow(arcade.Window):
 
         for index, action in enumerate(self.current_scene_actions):
             action.draw(SCREEN_HEIGHT - scene_desc_height - 150 - 40 * index)
+        # Рисуем героя
+        self.hero_portrait.center_x = DESCRIPTION_WIDTH + 100
+        self.hero_portrait.center_y = 500
+        self.hero_portrait.draw()
 
         # Рисуем правую область с характеристиками персонажа
-        arcade.draw_rectangle_filled(DESCRIPTION_WIDTH + CHARACTER_WIDTH / 2, SCREEN_HEIGHT / 2, CHARACTER_WIDTH,
-                                     CHARACTER_HEIGHT, arcade.color.BEIGE)
-        arcade.draw_text("Характеристики персонажа:", DESCRIPTION_WIDTH + 50, SCREEN_HEIGHT - 50, arcade.color.BLACK,
-                         16, anchor_x="left", anchor_y="top")
-        arcade.draw_text(f"Имя: {self.character_name}", DESCRIPTION_WIDTH + 50, SCREEN_HEIGHT - 100, arcade.color.BLACK,
-                         12, anchor_x="left", anchor_y="top")
-        arcade.draw_text(f"Здоровье: {self.health}", DESCRIPTION_WIDTH + 50, SCREEN_HEIGHT - 130, arcade.color.BLACK,
-                         12, anchor_x="left", anchor_y="top")
-        arcade.draw_text(f"Сила: {self.strength}", DESCRIPTION_WIDTH + 50, SCREEN_HEIGHT - 160, arcade.color.BLACK, 12,
-                         anchor_x="left", anchor_y="top")
-        arcade.draw_text(f"Защита: {self.defense}", DESCRIPTION_WIDTH + 50, SCREEN_HEIGHT - 190, arcade.color.BLACK, 12,
-                         anchor_x="left", anchor_y="top")
+        #arcade.draw_rectangle_filled(DESCRIPTION_WIDTH + CHARACTER_WIDTH / 2, SCREEN_HEIGHT / 2, CHARACTER_WIDTH,
+        #                             CHARACTER_HEIGHT, arcade.color.BEIGE)
+        for index, stat in enumerate(self.stats):
+            stat.draw(SCREEN_HEIGHT - 200 - 30 * index)
+
 
     def on_mouse_motion(self, x, y, dx, dy):
         for action in self.actions:
