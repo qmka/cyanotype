@@ -7,11 +7,20 @@ from classes.action import Action
 from classes.stat import Stat
 from engine.utils import json_to_dict
 
+# Game States
+STATE_START = 0
+STATE_MAIN = 1
+STATE_INVENTORY = 2
+
 
 def filter_actions_by_scene_id(actions_list, scene_id):
     filtered_actions = [action for action in actions_list if action.parent_scene == scene_id]
     return filtered_actions
 
+
+def get_stat_by_id(stats_list, stat_id):
+    filtered_stats = [stat for stat in stats_list if stat.id == stat_id]
+    return filtered_stats[0]
 
 
 class GameWindow(arcade.Window):
@@ -39,7 +48,11 @@ class GameWindow(arcade.Window):
         raw_actions = json_to_dict("content/actions.json")
         actions = []
         for a in raw_actions["actions"]:
-            actions.append(Action(a["id"], a["parent"], a["target"], a["text"]))
+            if "effects" in a:
+                effects = a["effects"]
+            else:
+                effects = []
+            actions.append(Action(a["id"], a["parent"], a["target"], a["text"], effects))
 
         # get stats
         raw_stats = json_to_dict("content/stats.json")
@@ -48,6 +61,7 @@ class GameWindow(arcade.Window):
             stats.append(Stat(a["id"], a["text"], a["value"]))
 
         # config game
+        self.game_state = STATE_MAIN
         self.scenes = scenes
         self.actions = actions
         self.stats = stats
@@ -56,38 +70,29 @@ class GameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
+        if self.game_state == STATE_MAIN:
+            self.draw_hero_portrait()
+            self.draw_hero_stats()
+            self.draw_scene_with_actions()
+        elif self.game_state == STATE_START:
+            self.draw_hero_portrait()
 
-        # Рисуем левую область с описанием сцены и действиями
-        arcade.draw_rectangle_filled(
-            DESCRIPTION_WIDTH / 2,
-            SCREEN_HEIGHT / 2,
-            DESCRIPTION_WIDTH,
-            DESCRIPTION_HEIGHT,
-            BACKGROUND_COLOR
-        )
-        current_scene = self.scenes[self.current_scene_id]
-        self.current_scene_actions = filter_actions_by_scene_id(self.actions, current_scene.id)
-        current_scene.draw()
-        scene_desc_height = current_scene.height
-
-        arcade.draw_text("Выберите действие:", 50, SCREEN_HEIGHT - scene_desc_height - 100, TEXT_COLOR, 12,
-                         font_name="Fira Code SemiBold",
-                         anchor_x="left",
-                         anchor_y="top")
-
-        for index, action in enumerate(self.current_scene_actions):
-            action.draw(SCREEN_HEIGHT - scene_desc_height - 150 - 40 * index)
-        # Рисуем героя
+    def draw_hero_portrait(self):
         self.hero_portrait.center_x = DESCRIPTION_WIDTH + 100
         self.hero_portrait.center_y = 500
         self.hero_portrait.draw()
 
-        # Рисуем правую область с характеристиками персонажа
-        #arcade.draw_rectangle_filled(DESCRIPTION_WIDTH + CHARACTER_WIDTH / 2, SCREEN_HEIGHT / 2, CHARACTER_WIDTH,
-        #                             CHARACTER_HEIGHT, arcade.color.BEIGE)
+    def draw_hero_stats(self):
         for index, stat in enumerate(self.stats):
             stat.draw(SCREEN_HEIGHT - 200 - 30 * index)
 
+    def draw_scene_with_actions(self):
+        current_scene = self.scenes[self.current_scene_id]
+        self.current_scene_actions = filter_actions_by_scene_id(self.actions, current_scene.id)
+        current_scene.draw()
+        scene_desc_height = current_scene.height
+        for index, action in enumerate(self.current_scene_actions):
+            action.draw(SCREEN_HEIGHT - scene_desc_height - 150 - 40 * index)
 
     def on_mouse_motion(self, x, y, dx, dy):
         for action in self.actions:
@@ -99,7 +104,19 @@ class GameWindow(arcade.Window):
             top_left_y = ac.y + ac.height / 2 - 10
             if top_left_x < x < top_left_x + ac.width + 10 and top_left_y - ac.height < y < top_left_y:
                 print(f"Выбран action id {ac.id}")
+                self.apply_action_effects(ac.effects)
                 self.current_scene_id = ac.target_scene
+
+    def apply_action_effects(self, effects):
+        if effects:
+            for effect in effects:
+                effect_type = effect["effect_type"]
+                target = effect["target"]
+                value = effect["value"]
+                if effect_type == "CHANGE_STAT":
+                    # Достаём стат с нужным id
+                    changed_stat = get_stat_by_id(self.stats, target)
+                    changed_stat.change(value)
 
 
 def main():
