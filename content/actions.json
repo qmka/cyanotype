@@ -7,19 +7,26 @@
       "target": 1
     }, {
       "id": 1,
-      "text": "Ничего не делать",
+      "text": "Выйти на рабочий стол",
       "parent": 0,
       "target": 0
     }, {
       "id": 2,
-      "text": "Закончить игру",
+      "text": "Идти дальше",
       "parent": 1,
       "target": 0
     }, {
       "id": 3,
-      "text": "Опять ничего не делать",
+      "text": "Бросить монету",
       "parent": 1,
-      "target": 1
+      "target": 1,
+      "effects": [
+        {
+          "effect_type": "CHANGE_STAT",
+          "target": 4,
+          "value": -1
+        }
+      ]
     }
   ]
 }

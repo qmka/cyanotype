@@ -2,32 +2,10 @@
   "scenes": [
     {
       "id": 0,
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
-      "actions": [
-        {
-          "id": 0,
-          "text": "Начать игру",
-          "target": 1
-        }, {
-          "id": 1,
-          "text": "Ничего не делать",
-          "target": 0
-        }
-      ]
+      "description": "Вы приходите в город, где живёт коварный злодей. Теперь судьба этой вселенной в ваших руках!"
     }, {
       "id": 1,
-      "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea",
-      "actions": [
-        {
-          "id": 0,
-          "text": "Закончить игру",
-          "target": 0
-        }, {
-          "id": 1,
-          "text": "Снова ничего не делать",
-          "target": 1
-        }
-      ]
+      "description": "Вы стоите на перекрёстке. Рядом сидит оборванец и тянет руку, чтобы вы подали ему монетку."
     }
   ]
 }
