@@ -3,7 +3,7 @@ from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR
 
 
 class Action:
-    def __init__(self, number, parent_scene, target_scene, text):
+    def __init__(self, number, parent_scene, target_scene, text, effects):
         self.x = 50
         self.y = 0
         self.color = TEXT_COLOR
@@ -11,6 +11,7 @@ class Action:
         self.id = number
         self.parent_scene = parent_scene
         self.target_scene = target_scene
+        self.effects = effects
 
         self.is_hovered = False
 
