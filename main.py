@@ -1,11 +1,11 @@
 import arcade
-from engine.settings import SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH, DESCRIPTION_HEIGHT
-from engine.settings import CHARACTER_WIDTH, CHARACTER_HEIGHT, BACKGROUND_COLOR, TEXT_COLOR
+from engine.settings import SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH
 from engine.settings import START_SCENE_ID
 from classes.scene import Scene
 from classes.action import Action
 from classes.stat import Stat
 from classes.item import Item
+from classes.menu import SidebarMenu
 from engine.utils import json_to_dict
 
 # Game States
@@ -36,6 +36,7 @@ class GameWindow(arcade.Window):
         self.current_scene_id = None
         self.current_scene_actions = None
         self.hero_portrait = None
+        self.menu = None
 
     def setup(self):
 
@@ -74,8 +75,12 @@ class GameWindow(arcade.Window):
         for a in raw_items["items"]:
             items.append(Item(a["id"], a["text"], a["description"]))
 
+        # setup sidebar menu
+        self.menu = SidebarMenu()
+        self.menu.add_item("Инвентарь", STATE_INVENTORY)
+
         # config game
-        self.game_state = STATE_MAIN
+        self.game_state = STATE_START
         self.scenes = scenes
         self.actions = actions
         self.stats = stats
@@ -88,9 +93,14 @@ class GameWindow(arcade.Window):
         if self.game_state == STATE_MAIN:
             self.draw_hero_portrait()
             self.draw_hero_stats()
+            self.draw_sidebar_menu()
             self.draw_scene_with_actions()
         elif self.game_state == STATE_START:
+            self.draw_scene_with_actions()
+        elif self.game_state == STATE_INVENTORY:
             self.draw_hero_portrait()
+            self.draw_hero_stats()
+            self.draw_sidebar_menu()
 
     def draw_hero_portrait(self):
         self.hero_portrait.center_x = DESCRIPTION_WIDTH + 100
@@ -109,9 +119,14 @@ class GameWindow(arcade.Window):
         for index, action in enumerate(self.current_scene_actions):
             action.draw(SCREEN_HEIGHT - scene_desc_height - 150 - 40 * index)
 
+    def draw_sidebar_menu(self):
+        self.menu.draw()
+
     def on_mouse_motion(self, x, y, dx, dy):
         for action in self.actions:
             action.check_hover(x, y)
+        for button in self.menu.buttons:
+            button.check_hover(x, y)
 
     def on_mouse_press(self, x, y, action, modifiers):
         for ac in self.current_scene_actions:
@@ -122,16 +137,28 @@ class GameWindow(arcade.Window):
                 self.apply_action_effects(ac.effects)
                 self.current_scene_id = ac.target_scene
 
+        for btn in self.menu.buttons:
+            top_left_x = btn.x
+            top_left_y = btn.y + btn.height / 2 - 10
+            if top_left_x < x < top_left_x + btn.width + 10 and top_left_y - btn.height < y < top_left_y:
+                print(f"Выбран menu item {btn.text}")
+                self.game_state = btn.target_game_state
+
     def apply_action_effects(self, effects):
         if effects:
             for effect in effects:
                 effect_type = effect["effect_type"]
                 target = effect["target"]
-                value = effect["value"]
+                if "value" in effect:
+                    value = effect["value"]
+                else:
+                    value = None
                 if effect_type == "CHANGE_STAT":
                     # Достаём стат с нужным id
                     changed_stat = get_stat_by_id(self.stats, target)
                     changed_stat.change(value)
+                elif effect_type == "CHANGE_GAME_STATE":
+                    self.game_state = target
 
 
 def main():

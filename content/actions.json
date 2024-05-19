@@ -4,7 +4,13 @@
       "id": 0,
       "text": "Начать игру",
       "parent": 0,
-      "target": 1
+      "target": 1,
+      "effects": [
+        {
+          "effect_type": "CHANGE_GAME_STATE",
+          "target": 1
+        }
+      ]
     }, {
       "id": 1,
       "text": "Выйти на рабочий стол",
