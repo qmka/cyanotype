@@ -5,6 +5,7 @@ from engine.settings import START_SCENE_ID
 from classes.scene import Scene
 from classes.action import Action
 from classes.stat import Stat
+from classes.item import Item
 from engine.utils import json_to_dict
 
 # Game States
@@ -27,16 +28,23 @@ class GameWindow(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Choose Your Adventure")
 
+        self.game_state = None
+        self.scenes = None
+        self.actions = None
+        self.stats = None
+        self.items = None
+        self.current_scene_id = None
+        self.current_scene_actions = None
+        self.hero_portrait = None
+
+    def setup(self):
+
+        # upload font
         arcade.load_font("fonts/FiraCode-SemiBold.ttf")
 
+        # upload graphics
         hero_portrait_image_path = "media/images/hero.png"
         self.hero_portrait = arcade.Sprite(hero_portrait_image_path)
-
-        # Определение начальных характеристик персонажа
-        self.character_name = "Hero"
-        self.health = 100
-        self.strength = 10
-        self.defense = 5
 
         # get scenes
         raw_scenes = json_to_dict("content/scenes.json")
@@ -60,11 +68,18 @@ class GameWindow(arcade.Window):
         for a in raw_stats["stats"]:
             stats.append(Stat(a["id"], a["text"], a["value"]))
 
+        # get items
+        raw_items = json_to_dict("content/items.json")
+        items = []
+        for a in raw_items["items"]:
+            items.append(Item(a["id"], a["text"], a["description"]))
+
         # config game
         self.game_state = STATE_MAIN
         self.scenes = scenes
         self.actions = actions
         self.stats = stats
+        self.items = items
         self.current_scene_id = START_SCENE_ID
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, self.current_scene_id)
 
@@ -120,7 +135,8 @@ class GameWindow(arcade.Window):
 
 
 def main():
-    window = GameWindow()
+    game = GameWindow()
+    game.setup()
     arcade.run()
 
 
