@@ -4,7 +4,7 @@ from engine.settings import START_SCENE_ID
 from classes.scene import Scene
 from classes.action import Action
 from classes.stat import Stat
-from classes.item import Item
+from classes.inventory import Inventory, Item
 from classes.menu import SidebarMenu
 from engine.utils import json_to_dict
 
@@ -32,6 +32,7 @@ class GameWindow(arcade.Window):
         self.scenes = None
         self.actions = None
         self.stats = None
+        self.inventory = None
         self.items = None
         self.current_scene_id = None
         self.current_scene_actions = None
@@ -88,6 +89,11 @@ class GameWindow(arcade.Window):
         self.current_scene_id = START_SCENE_ID
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, self.current_scene_id)
 
+        # fill inventory
+        self.inventory = Inventory()
+        self.inventory.add_item(self.items, 0)
+        self.inventory.add_item(self.items, 1)
+
     def on_draw(self):
         arcade.start_render()
         if self.game_state == STATE_MAIN:
@@ -101,6 +107,7 @@ class GameWindow(arcade.Window):
             self.draw_hero_portrait()
             self.draw_hero_stats()
             self.draw_sidebar_menu()
+            self.draw_inventory()
 
     def draw_hero_portrait(self):
         self.hero_portrait.center_x = DESCRIPTION_WIDTH + 100
@@ -122,27 +129,59 @@ class GameWindow(arcade.Window):
     def draw_sidebar_menu(self):
         self.menu.draw()
 
+    def draw_inventory(self):
+        self.inventory.draw()
+
     def on_mouse_motion(self, x, y, dx, dy):
-        for action in self.actions:
-            action.check_hover(x, y)
-        for button in self.menu.buttons:
-            button.check_hover(x, y)
+        # actions
+        if self.game_state == STATE_START or self.game_state == STATE_MAIN:
+            for action in self.actions:
+                action.check_hover(x, y)
+        # menu buttons
+        if self.game_state != STATE_START:
+            for button in self.menu.buttons:
+                button.check_hover(x, y)
+        # inventory items
+        if self.game_state == STATE_INVENTORY:
+            for item in self.inventory.items:
+                item.check_hover(x, y)
+            self.inventory.back_button.check_hover(x, y)
 
     def on_mouse_press(self, x, y, action, modifiers):
-        for ac in self.current_scene_actions:
-            top_left_x = ac.x
-            top_left_y = ac.y + ac.height / 2 - 10
-            if top_left_x < x < top_left_x + ac.width + 10 and top_left_y - ac.height < y < top_left_y:
-                print(f"Выбран action id {ac.id}")
-                self.apply_action_effects(ac.effects)
-                self.current_scene_id = ac.target_scene
 
-        for btn in self.menu.buttons:
-            top_left_x = btn.x
-            top_left_y = btn.y + btn.height / 2 - 10
-            if top_left_x < x < top_left_x + btn.width + 10 and top_left_y - btn.height < y < top_left_y:
-                print(f"Выбран menu item {btn.text}")
-                self.game_state = btn.target_game_state
+        # actions
+        if self.game_state == STATE_START or self.game_state == STATE_MAIN:
+            for ac in self.current_scene_actions:
+                top_left_x = ac.x
+                top_left_y = ac.y + ac.height / 2 - 10
+                if top_left_x < x < top_left_x + ac.width + 10 and top_left_y - ac.height < y < top_left_y:
+                    print(f"Выбран action id {ac.id}")
+                    self.apply_action_effects(ac.effects)
+                    self.current_scene_id = ac.target_scene
+
+        # menu buttons
+        if self.game_state != STATE_START:
+            for btn in self.menu.buttons:
+                top_left_x = btn.x
+                top_left_y = btn.y + btn.height / 2 - 10
+                if top_left_x < x < top_left_x + btn.width + 10 and top_left_y - btn.height < y < top_left_y:
+                    print(f"Выбран menu item {btn.text}")
+                    self.game_state = btn.target_game_state
+
+        # inventory items
+        if self.game_state == STATE_INVENTORY:
+            for itm in self.inventory.items:
+                top_left_x = itm.x
+                top_left_y = itm.y + itm.height / 2 - 10
+                if top_left_x < x < top_left_x + itm.width + 10 and top_left_y - itm.height < y < top_left_y:
+                    self.inventory.checked_item = itm
+
+            backbutton_top_left_x = self.inventory.back_button.x
+            backbutton_top_left_y = self.inventory.back_button.y + self.inventory.back_button.height / 2 - 10
+
+            if backbutton_top_left_x < x < backbutton_top_left_x + self.inventory.back_button.width + 10 and backbutton_top_left_y - self.inventory.back_button.height < y < backbutton_top_left_y:
+                self.inventory.checked_item = None
+                self.game_state = STATE_MAIN
 
     def apply_action_effects(self, effects):
         if effects:
@@ -154,10 +193,10 @@ class GameWindow(arcade.Window):
                 else:
                     value = None
                 if effect_type == "CHANGE_STAT":
-                    # Достаём стат с нужным id
                     changed_stat = get_stat_by_id(self.stats, target)
                     changed_stat.change(value)
                 elif effect_type == "CHANGE_GAME_STATE":
+                    print(f'gamestate changet to {target}')
                     self.game_state = target
 
 
