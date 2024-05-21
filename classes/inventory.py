@@ -1,6 +1,7 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT
 from engine.settings import FONT_NAME, FONT_SIZE
+from engine.utils import get_arcade_text_size
 
 
 def get_item_by_id(items_list, item_id):
@@ -14,7 +15,7 @@ class Inventory:
         self.y = SCREEN_HEIGHT - 50
         self.items_count = 0
         self.items = []
-        self.color = arcade.color.GOLD_FUSION
+        self.color = arcade.color.GOLDEN_YELLOW
         self.checked_item = None
         self.back_button = BackButton()
 
@@ -65,19 +66,9 @@ class Item:
 
         self.is_hovered = False
 
-        _item = arcade.Text(
-            self.text,
-            self.x,
-            self.y,
-            self.color,
-            font_name=FONT_NAME,
-            font_size=FONT_SIZE,
-            anchor_x="left",
-            anchor_y="top"
-        )
-        self.width = _item.content_width
-        self.height = _item.content_height
-        del _item
+        _size = get_arcade_text_size(self)
+        self.width = _size["width"]
+        self.height = _size["height"]
 
     def draw(self, x, y):
         self.x = x
@@ -136,21 +127,9 @@ class BackButton:
 
         self.is_hovered = False
 
-        _button = arcade.Text(
-            self.text,
-            self.x,
-            self.y,
-            self.color,
-            font_name=FONT_NAME,
-            font_size=FONT_SIZE,
-            multiline=True,
-            width=DESCRIPTION_WIDTH - 100,
-            anchor_x="left",
-            anchor_y="top"
-        )
-        self.width = _button.content_width
-        self.height = _button.content_height
-        del _button
+        _size = get_arcade_text_size(self)
+        self.width = _size["width"]
+        self.height = _size["height"]
 
     def draw(self, x, y):
         self.x = x

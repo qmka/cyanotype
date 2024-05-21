@@ -1,6 +1,7 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR
 from engine.settings import FONT_NAME, FONT_SIZE
+from engine.utils import get_arcade_text_size
 
 
 class Action:
@@ -16,21 +17,9 @@ class Action:
 
         self.is_hovered = False
 
-        _action = arcade.Text(
-            self.text,
-            self.x,
-            self.y,
-            self.color,
-            font_name=FONT_NAME,
-            font_size=FONT_SIZE,
-            multiline=True,
-            width=DESCRIPTION_WIDTH - 100,
-            anchor_x="left",
-            anchor_y="top"
-        )
-        self.width = _action.content_width
-        self.height = _action.content_height
-        del _action
+        _size = get_arcade_text_size(self, multiline=True, multiline_width=DESCRIPTION_WIDTH-100)
+        self.width = _size["width"]
+        self.height = _size["height"]
 
     def draw(self, y):
         self.y = y

@@ -1,6 +1,7 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR
 from engine.settings import FONT_NAME, FONT_SIZE
+from engine.utils import get_arcade_text_size
 
 
 class SidebarMenuItem:
@@ -12,19 +13,9 @@ class SidebarMenuItem:
         self.color = TEXT_COLOR
         self.is_hovered = False
 
-        _item = arcade.Text(
-            self.text,
-            self.x,
-            self.y,
-            self.color,
-            font_name=FONT_NAME,
-            font_size=FONT_SIZE,
-            anchor_x="left",
-            anchor_y="top"
-        )
-        self.width = _item.content_width
-        self.height = _item.content_height
-        del _item
+        _size = get_arcade_text_size(self)
+        self.width = _size["width"]
+        self.height = _size["height"]
 
     def draw(self, x, y):
         self.y = y
