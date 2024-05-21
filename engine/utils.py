@@ -36,3 +36,14 @@ def get_arcade_text_size(arcade_object, multiline=False, multiline_width=None):
         "width": width,
         "height": height
     }
+
+
+def is_hovered (arcade_object, x, y):
+    # check coords of top left corner of action text
+    top_left_x = arcade_object.x
+    top_left_y = arcade_object.y  # + self.height / 2 - 10
+
+    # check cursor is inside action text area
+    if top_left_x < x < top_left_x + arcade_object.width + 10 and top_left_y - arcade_object.height < y < top_left_y:
+        return True
+    return False

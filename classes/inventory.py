@@ -1,7 +1,7 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT
 from engine.settings import FONT_NAME, FONT_SIZE
-from engine.utils import get_arcade_text_size
+from engine.utils import get_arcade_text_size, is_hovered
 
 
 def get_item_by_id(items_list, item_id):
@@ -106,16 +106,7 @@ class Item:
         description.draw()
 
     def check_hover(self, x, y):
-        # check coords of top left corner of action text
-        top_left_x = self.x
-        top_left_y = self.y  # + self.height / 2 - 10
-
-        # check cursor is inside action text area
-        if top_left_x < x < top_left_x + self.width + 10 and \
-                top_left_y - self.height < y < top_left_y:
-            self.is_hovered = True
-        else:
-            self.is_hovered = False
+        self.is_hovered = is_hovered(self, x, y)
 
 
 class BackButton:
@@ -154,14 +145,4 @@ class BackButton:
         action.draw()
 
     def check_hover(self, x, y):
-        # check coords of top left corner of action text
-        top_left_x = self.x
-        top_left_y = self.y  # + self.height / 2 - 10
-
-        # check cursor is inside action text area
-        if top_left_x < x < top_left_x + self.width + 10 and \
-                top_left_y - self.height < y < top_left_y:
-            self.is_hovered = True
-        else:
-            self.is_hovered = False
-
+        self.is_hovered = is_hovered(self, x, y)
