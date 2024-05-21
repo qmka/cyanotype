@@ -30,6 +30,10 @@ class Inventory:
     def get_items(self):
         return self.items
 
+    def clean_colors(self):
+        for item in self.items:
+            item.is_checked = False
+
     def draw(self):
         title = arcade.Text(
             "Инвентарь",
@@ -50,6 +54,7 @@ class Inventory:
 
         if self.checked_item is not None:
             self.checked_item.draw_description(350, 510)
+            self.checked_item.is_checked = True
 
         self.back_button.draw(self.x, self.y - last_item_y - 40)
 
@@ -65,6 +70,7 @@ class Item:
         self.description = description
 
         self.is_hovered = False
+        self.is_checked = False
 
         _size = get_arcade_text_size(self)
         self.width = _size["width"]
@@ -75,6 +81,8 @@ class Item:
         self.y = y
         if self.is_hovered:
             self.color = TEXT_HOVER_COLOR
+        elif self.is_checked:
+            self.color = arcade.color.GREEN
         else:
             self.color = TEXT_COLOR
 

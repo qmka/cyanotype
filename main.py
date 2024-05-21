@@ -175,6 +175,7 @@ class GameWindow(arcade.Window):
                 top_left_x = itm.x
                 top_left_y = itm.y + itm.height / 2 - 10
                 if top_left_x < x < top_left_x + itm.width + 10 and top_left_y - itm.height < y < top_left_y:
+                    self.inventory.clean_colors()
                     self.inventory.checked_item = itm
 
             backbutton_top_left_x = self.inventory.back_button.x
