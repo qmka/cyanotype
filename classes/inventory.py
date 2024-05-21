@@ -18,13 +18,20 @@ class Inventory:
         self.color = arcade.color.GOLDEN_YELLOW
         self.checked_item = None
         self.back_button = BackButton()
+        self.delete_item_button = DeleteItemButton()
 
-    def add_item(self, items_list, item_id):
+    def add_item_by_id(self, items_list, item_id):
         item = get_item_by_id(items_list, item_id)
         self.items.append(item)
 
-    def remove_item(self, items_list, item_id):
+    def remove_item_by_id(self, items_list, item_id):
         item = get_item_by_id(items_list, item_id)
+        self.items.remove(item)
+
+    def add_item(self, item):
+        self.items.append(item)
+
+    def remove_item(self, item):
         self.items.remove(item)
 
     def get_items(self):
@@ -47,16 +54,31 @@ class Inventory:
         )
         title.draw()
         last_item_y = 0
-        for index, item in enumerate(self.items):
-            item_y = (index + 1) * 40
-            item.draw(self.x, self.y - item_y)
-            last_item_y = item_y
+        if self.items:
+            for index, item in enumerate(self.items):
+                item_y = (index + 1) * 25
+                item.draw(self.x, self.y - item_y)
+                last_item_y = item_y
 
-        if self.checked_item is not None:
-            self.checked_item.draw_description(350, 510)
-            self.checked_item.is_checked = True
+            if self.checked_item is not None:
+                description_height = self.checked_item.draw_description(350, 525)
+                self.checked_item.is_checked = True
+                self.delete_item_button.draw(520, self.y - description_height - 55)
+        else:
+            empty_text = arcade.Text(
+                "Пусто",
+                self.x,
+                self.y - 40,
+                TEXT_COLOR,
+                font_name=FONT_NAME,
+                font_size=FONT_SIZE,
+                anchor_x="left",
+                anchor_y="top"
+            )
+            empty_text.draw()
+            last_item_y = 40
 
-        self.back_button.draw(self.x, self.y - last_item_y - 40)
+        self.back_button.draw(self.x, self.y - last_item_y - 80)
 
 
 class Item:
@@ -111,7 +133,9 @@ class Item:
             anchor_x="left",
             anchor_y="top"
         )
+        description_height = description.content_height
         description.draw()
+        return description_height
 
     def check_hover(self, x, y):
         self.is_hovered = is_cursor_on_object(self, x, y)
@@ -138,6 +162,51 @@ class BackButton:
             self.color = TEXT_HOVER_COLOR
         else:
             self.color = arcade.color.ELECTRIC_CYAN
+
+        action = arcade.Text(
+            self.text,
+            self.x,
+            self.y,
+            self.color,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
+            multiline=True,
+            width=DESCRIPTION_WIDTH - 100,
+            anchor_x="left",
+            anchor_y="top"
+        )
+        action.draw()
+
+    def check_hover(self, x, y):
+        self.is_hovered = is_cursor_on_object(self, x, y)
+        return self.is_hovered
+
+    def check_press(self, x, y):
+        self.is_pressed = is_cursor_on_object(self, x, y)
+        return self.is_pressed
+
+
+class DeleteItemButton:
+    def __init__(self):
+        self.x = 50
+        self.y = 0
+        self.color = arcade.color.RED
+        self.text = "Удалить"
+
+        self.is_hovered = False
+        self.is_pressed = False
+
+        _size = get_arcade_text_size(self)
+        self.width = _size["width"]
+        self.height = _size["height"]
+
+    def draw(self, x, y):
+        self.x = x
+        self.y = y
+        if self.is_hovered:
+            self.color = arcade.color.RADICAL_RED
+        else:
+            self.color = arcade.color.RED
 
         action = arcade.Text(
             self.text,

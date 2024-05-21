@@ -92,8 +92,8 @@ class GameWindow(arcade.Window):
 
         # fill inventory
         self.inventory = Inventory()
-        self.inventory.add_item(self.items, 0)
-        self.inventory.add_item(self.items, 1)
+        self.inventory.add_item_by_id(self.items, 0)
+        self.inventory.add_item_by_id(self.items, 1)
 
     def on_draw(self):
         arcade.start_render()
@@ -147,6 +147,7 @@ class GameWindow(arcade.Window):
             for item in self.inventory.items:
                 item.check_hover(x, y)
             self.inventory.back_button.check_hover(x, y)
+            self.inventory.delete_item_button.check_hover(x, y)
 
     def on_mouse_press(self, x, y, action, modifiers):
 
@@ -176,6 +177,11 @@ class GameWindow(arcade.Window):
                 self.inventory.back_button.is_pressed = False
                 self.inventory.checked_item = None
                 self.game_state = STATE_MAIN
+
+            if self.inventory.checked_item and self.inventory.delete_item_button.check_press(x, y):
+                self.inventory.delete_item_button.is_pressed = False
+                self.inventory.remove_item(self.inventory.checked_item)
+                self.inventory.checked_item = None
 
     def apply_action_effects(self, effects):
         if effects:
