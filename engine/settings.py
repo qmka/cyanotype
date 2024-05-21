@@ -1,6 +1,7 @@
 import arcade
 
-# SCREEN AREAS
+# SCREEN
+GAME_TITLE = "Choose Your Adventure"
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 DESCRIPTION_WIDTH = 600
@@ -11,7 +12,12 @@ CHARACTER_HEIGHT = SCREEN_HEIGHT
 # COLORS
 BACKGROUND_COLOR = arcade.color.BLACK
 TEXT_COLOR = arcade.color.WHITE
-TEXT_HOVER_COLOR = arcade.color.REDWOOD
+TEXT_HOVER_COLOR = arcade.color.GOLD
+
+# FONT
+FONT_PATH = "fonts/FiraCode-SemiBold.ttf"
+FONT_NAME = "Fira Code SemiBold"
+FONT_SIZE = 12
 
 # GAME
 START_SCENE_ID = 0

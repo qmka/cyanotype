@@ -1,5 +1,6 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT
+from engine.settings import FONT_NAME, FONT_SIZE
 
 
 def get_item_by_id(items_list, item_id):
@@ -13,7 +14,7 @@ class Inventory:
         self.y = SCREEN_HEIGHT - 50
         self.items_count = 0
         self.items = []
-        self.color = arcade.color.GOLD
+        self.color = arcade.color.GOLD_FUSION
         self.checked_item = None
         self.back_button = BackButton()
 
@@ -34,8 +35,8 @@ class Inventory:
             50,
             SCREEN_HEIGHT - 50,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             anchor_x="left",
             anchor_y="top"
         )
@@ -69,8 +70,8 @@ class Item:
             self.x,
             self.y,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             anchor_x="left",
             anchor_y="top"
         )
@@ -91,8 +92,8 @@ class Item:
             self.x,
             self.y,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             anchor_x="left",
             anchor_y="top"
         )
@@ -104,8 +105,8 @@ class Item:
             x,
             y,
             TEXT_COLOR,
-            font_size=12,
-            font_name="Fira Code SemiBold",
+            font_size=FONT_SIZE,
+            font_name=FONT_NAME,
             multiline=True,
             width=250,
             anchor_x="left",
@@ -140,8 +141,8 @@ class BackButton:
             self.x,
             self.y,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             multiline=True,
             width=DESCRIPTION_WIDTH - 100,
             anchor_x="left",
@@ -164,8 +165,8 @@ class BackButton:
             self.x,
             self.y,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             multiline=True,
             width=DESCRIPTION_WIDTH - 100,
             anchor_x="left",

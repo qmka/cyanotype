@@ -1,5 +1,6 @@
 import arcade
 from engine.settings import SCREEN_HEIGHT, DESCRIPTION_WIDTH, TEXT_COLOR
+from engine.settings import FONT_NAME, FONT_SIZE
 
 
 class Scene:
@@ -10,8 +11,8 @@ class Scene:
             50,
             SCREEN_HEIGHT - 50,
             TEXT_COLOR,
-            font_size=12,
-            font_name="Fira Code SemiBold",
+            font_size=FONT_SIZE,
+            font_name=FONT_NAME,
             multiline=True,
             width=DESCRIPTION_WIDTH - 100,
             anchor_x="left",

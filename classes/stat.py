@@ -1,5 +1,6 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR
+from engine.settings import FONT_NAME, FONT_SIZE
 
 
 class Stat:
@@ -25,8 +26,8 @@ class Stat:
             self.x,
             self.y,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             anchor_x="left",
             anchor_y="top"
         )

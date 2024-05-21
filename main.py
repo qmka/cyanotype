@@ -1,6 +1,7 @@
 import arcade
-from engine.settings import SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH
+from engine.settings import GAME_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH
 from engine.settings import START_SCENE_ID
+from engine.settings import FONT_PATH
 from classes.scene import Scene
 from classes.action import Action
 from classes.stat import Stat
@@ -26,7 +27,7 @@ def get_stat_by_id(stats_list, stat_id):
 
 class GameWindow(arcade.Window):
     def __init__(self):
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Choose Your Adventure")
+        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_TITLE)
 
         self.game_state = None
         self.scenes = None
@@ -42,7 +43,7 @@ class GameWindow(arcade.Window):
     def setup(self):
 
         # upload font
-        arcade.load_font("fonts/FiraCode-SemiBold.ttf")
+        arcade.load_font(FONT_PATH)
 
         # upload graphics
         hero_portrait_image_path = "media/images/hero.png"

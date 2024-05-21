@@ -1,5 +1,6 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR
+from engine.settings import FONT_NAME, FONT_SIZE
 
 
 class Action:
@@ -20,8 +21,8 @@ class Action:
             self.x,
             self.y,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             multiline=True,
             width=DESCRIPTION_WIDTH - 100,
             anchor_x="left",
@@ -43,8 +44,8 @@ class Action:
             self.x,
             self.y,
             self.color,
-            font_name="Fira Code SemiBold",
-            font_size=12,
+            font_name=FONT_NAME,
+            font_size=FONT_SIZE,
             multiline=True,
             width=DESCRIPTION_WIDTH - 100,
             anchor_x="left",
