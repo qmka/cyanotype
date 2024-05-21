@@ -7,7 +7,7 @@ from classes.action import Action
 from classes.stat import Stat
 from classes.inventory import Inventory, Item
 from classes.menu import SidebarMenu
-from engine.utils import json_to_dict
+from engine.utils import json_to_dict, is_cursor_on_object
 
 # Game States
 STATE_START = 0
@@ -152,36 +152,28 @@ class GameWindow(arcade.Window):
 
         # actions
         if self.game_state == STATE_START or self.game_state == STATE_MAIN:
-            for ac in self.current_scene_actions:
-                top_left_x = ac.x
-                top_left_y = ac.y + ac.height / 2 - 10
-                if top_left_x < x < top_left_x + ac.width + 10 and top_left_y - ac.height < y < top_left_y:
-                    print(f"Выбран action id {ac.id}")
-                    self.apply_action_effects(ac.effects)
-                    self.current_scene_id = ac.target_scene
+            for a in self.current_scene_actions:
+                if is_cursor_on_object(a, x, y):
+                    print(f"Выбран action id {a.id}")
+                    self.apply_action_effects(a.effects)
+                    self.current_scene_id = a.target_scene
 
         # menu buttons
         if self.game_state != STATE_START:
-            for btn in self.menu.buttons:
-                top_left_x = btn.x
-                top_left_y = btn.y + btn.height / 2 - 10
-                if top_left_x < x < top_left_x + btn.width + 10 and top_left_y - btn.height < y < top_left_y:
-                    print(f"Выбран menu item {btn.text}")
-                    self.game_state = btn.target_game_state
+            for a in self.menu.buttons:
+                if is_cursor_on_object(a, x, y):
+                    print(f"Выбран menu item {a.text}")
+                    self.game_state = a.target_game_state
 
         # inventory items
         if self.game_state == STATE_INVENTORY:
-            for itm in self.inventory.items:
-                top_left_x = itm.x
-                top_left_y = itm.y + itm.height / 2 - 10
-                if top_left_x < x < top_left_x + itm.width + 10 and top_left_y - itm.height < y < top_left_y:
+            for a in self.inventory.items:
+                if is_cursor_on_object(a, x, y):
                     self.inventory.clean_colors()
-                    self.inventory.checked_item = itm
+                    self.inventory.checked_item = a
 
-            backbutton_top_left_x = self.inventory.back_button.x
-            backbutton_top_left_y = self.inventory.back_button.y + self.inventory.back_button.height / 2 - 10
-
-            if backbutton_top_left_x < x < backbutton_top_left_x + self.inventory.back_button.width + 10 and backbutton_top_left_y - self.inventory.back_button.height < y < backbutton_top_left_y:
+            if self.inventory.back_button.check_press(x, y):
+                self.inventory.back_button.is_pressed = False
                 self.inventory.checked_item = None
                 self.game_state = STATE_MAIN
 

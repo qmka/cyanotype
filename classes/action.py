@@ -1,7 +1,7 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR
 from engine.settings import FONT_NAME, FONT_SIZE
-from engine.utils import get_arcade_text_size, is_hovered
+from engine.utils import get_arcade_text_size, is_cursor_on_object
 
 
 class Action:
@@ -43,4 +43,4 @@ class Action:
         action.draw()
 
     def check_hover(self, x, y):
-        self.is_hovered = is_hovered(self, x, y)
+        self.is_hovered = is_cursor_on_object(self, x, y)

@@ -1,7 +1,7 @@
 import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT
 from engine.settings import FONT_NAME, FONT_SIZE
-from engine.utils import get_arcade_text_size, is_hovered
+from engine.utils import get_arcade_text_size, is_cursor_on_object
 
 
 def get_item_by_id(items_list, item_id):
@@ -114,7 +114,7 @@ class Item:
         description.draw()
 
     def check_hover(self, x, y):
-        self.is_hovered = is_hovered(self, x, y)
+        self.is_hovered = is_cursor_on_object(self, x, y)
 
 
 class BackButton:
@@ -125,6 +125,7 @@ class BackButton:
         self.text = "Назад"
 
         self.is_hovered = False
+        self.is_pressed = False
 
         _size = get_arcade_text_size(self)
         self.width = _size["width"]
@@ -153,4 +154,9 @@ class BackButton:
         action.draw()
 
     def check_hover(self, x, y):
-        self.is_hovered = is_hovered(self, x, y)
+        self.is_hovered = is_cursor_on_object(self, x, y)
+        return self.is_hovered
+
+    def check_press(self, x, y):
+        self.is_pressed = is_cursor_on_object(self, x, y)
+        return self.is_pressed
