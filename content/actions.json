@@ -18,13 +18,44 @@
       "target": 0
     }, {
       "id": 2,
-      "text": "Идти дальше",
+      "text": "Войти в тоннель",
       "parent": 1,
-      "target": 0
+      "target": 0,
+      "effects": [
+        {
+          "effect_type": "CHECK_LUCK",
+          "good_target": 194,
+          "bad_target": 69
+        }
+      ]
     }, {
       "id": 3,
       "text": "Бросить монету",
       "parent": 1,
+      "target": 1,
+      "effects": [
+        {
+          "effect_type": "CHANGE_STAT",
+          "target": 4,
+          "value": -1
+        }
+      ]
+    }, {
+      "id": 4,
+      "text": "Бросить монету",
+      "parent": 69,
+      "target": 1,
+      "effects": [
+        {
+          "effect_type": "CHANGE_STAT",
+          "target": 4,
+          "value": -1
+        }
+      ]
+    }, {
+      "id": 5,
+      "text": "Бросить монету",
+      "parent": 194,
       "target": 1,
       "effects": [
         {

@@ -1,4 +1,5 @@
 import arcade
+import random
 from engine.settings import GAME_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH
 from engine.settings import START_SCENE_ID
 from engine.settings import FONT_PATH
@@ -25,6 +26,11 @@ def get_stat_by_id(stats_list, stat_id):
     return filtered_stats[0]
 
 
+def get_scene_by_id(scenes_list, scene_id):
+    filtered_scenes = [scene for scene in scenes_list if scene.id == scene_id]
+    return filtered_scenes[0]
+
+
 class GameWindow(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_TITLE)
@@ -37,6 +43,7 @@ class GameWindow(arcade.Window):
         self.items = None
         self.current_scene_id = None
         self.current_scene_actions = None
+        self.is_scene_changed = False
         self.hero_portrait = None
         self.menu = None
 
@@ -120,7 +127,7 @@ class GameWindow(arcade.Window):
             stat.draw(SCREEN_HEIGHT - 200 - 30 * index)
 
     def draw_scene_with_actions(self):
-        current_scene = self.scenes[self.current_scene_id]
+        current_scene = get_scene_by_id(self.scenes, self.current_scene_id)
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, current_scene.id)
         current_scene.draw()
         scene_desc_height = current_scene.height
@@ -157,7 +164,9 @@ class GameWindow(arcade.Window):
                 if is_cursor_on_object(a, x, y):
                     print(f"Выбран action id {a.id}")
                     self.apply_action_effects(a.effects)
-                    self.current_scene_id = a.target_scene
+                    if not self.is_scene_changed:
+                        self.current_scene_id = a.target_scene
+                        self.is_scene_changed = False
 
         # menu buttons
         if self.game_state != STATE_START:
@@ -187,17 +196,20 @@ class GameWindow(arcade.Window):
         if effects:
             for effect in effects:
                 effect_type = effect["effect_type"]
-                target = effect["target"]
-                if "value" in effect:
-                    value = effect["value"]
-                else:
-                    value = None
+                target = effect["target"] if "target" in effect else None
+                value = effect["value"] if "value" in effect else None
+
                 if effect_type == "CHANGE_STAT":
                     changed_stat = get_stat_by_id(self.stats, target)
                     changed_stat.change(value)
                 elif effect_type == "CHANGE_GAME_STATE":
                     print(f'gamestate changet to {target}')
                     self.game_state = target
+                elif effect_type == "CHECK_LUCK":   # экшен с изменением сцены должен быть один в списке экшенов,
+                    # а в этом списке - в конце (для перестраховки - пока не понимаю, будет ли это работать корректно)
+                    luck_check = random.choice([True, False])
+                    self.current_scene_id = effect["good_target"] if luck_check else effect["bad_target"]
+                    self.is_scene_changed = True
 
 
 def main():
