@@ -46,7 +46,7 @@ class Inventory:
             "Инвентарь",
             50,
             SCREEN_HEIGHT - 50,
-            self.color,
+            arcade.color.BLUEBERRY,
             font_name=FONT_NAME,
             font_size=FONT_SIZE,
             anchor_x="left",
@@ -57,18 +57,18 @@ class Inventory:
         if self.items:
             for index, item in enumerate(self.items):
                 item_y = (index + 1) * 25
-                item.draw(self.x, self.y - item_y)
+                item.draw(self.x, self.y - item_y - 25)
                 last_item_y = item_y
 
             if self.checked_item is not None:
-                description_height = self.checked_item.draw_description(350, 525)
+                description_height = self.checked_item.draw_description(350, 500)
                 self.checked_item.is_checked = True
                 self.delete_item_button.draw(520, self.y - description_height - 55)
         else:
             empty_text = arcade.Text(
                 "Пусто",
                 self.x,
-                self.y - 40,
+                self.y - 50,
                 TEXT_COLOR,
                 font_name=FONT_NAME,
                 font_size=FONT_SIZE,
@@ -76,7 +76,7 @@ class Inventory:
                 anchor_y="top"
             )
             empty_text.draw()
-            last_item_y = 40
+            last_item_y = 25
 
         self.back_button.draw(self.x, self.y - last_item_y - 80)
 
@@ -204,7 +204,7 @@ class DeleteItemButton:
         self.x = x
         self.y = y
         if self.is_hovered:
-            self.color = arcade.color.RADICAL_RED
+            self.color = TEXT_HOVER_COLOR
         else:
             self.color = arcade.color.RED
 
