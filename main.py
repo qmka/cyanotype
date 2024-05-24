@@ -99,8 +99,8 @@ class GameWindow(arcade.Window):
 
         # fill inventory
         self.inventory = Inventory()
-        self.inventory.add_item_by_id(self.items, 0)
-        self.inventory.add_item_by_id(self.items, 1)
+        # self.inventory.add_item_by_id(self.items, 0)
+        # self.inventory.add_item_by_id(self.items, 1)
 
     def on_draw(self):
         arcade.start_render()
@@ -164,9 +164,11 @@ class GameWindow(arcade.Window):
                 if is_cursor_on_object(a, x, y):
                     print(f"Выбран action id {a.id}")
                     self.apply_action_effects(a.effects)
+                    print(self.is_scene_changed)
                     if not self.is_scene_changed:
+                        print('here')
                         self.current_scene_id = a.target_scene
-                        self.is_scene_changed = False
+                    self.is_scene_changed = False
 
         # menu buttons
         if self.game_state != STATE_START:
@@ -202,8 +204,11 @@ class GameWindow(arcade.Window):
                 if effect_type == "CHANGE_STAT":
                     changed_stat = get_stat_by_id(self.stats, target)
                     changed_stat.change(value)
+                elif effect_type == "ADD_ITEMS":
+                    for item_id in effect["item_ids"]:
+                        self.inventory.add_item_by_id(self.items, item_id)
                 elif effect_type == "CHANGE_GAME_STATE":
-                    print(f'gamestate changet to {target}')
+                    # print(f'gamestate changet to {target}')
                     self.game_state = target
                 elif effect_type == "CHECK_LUCK":   # экшен с изменением сцены должен быть один в списке экшенов,
                     # а в этом списке - в конце (для перестраховки - пока не понимаю, будет ли это работать корректно)
