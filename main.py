@@ -6,6 +6,7 @@ from engine.settings import FONT_PATH
 from classes.scene import Scene
 from classes.action import Action
 from classes.stat import Stat
+from classes.flag import Flag
 from classes.inventory import Inventory, Item
 from classes.menu import SidebarMenu
 from engine.utils import json_to_dict, is_cursor_on_object
@@ -25,6 +26,9 @@ def get_stat_by_id(stats_list, stat_id):
     filtered_stats = [stat for stat in stats_list if stat.id == stat_id]
     return filtered_stats[0]
 
+def get_flag_by_id(flags_list, flag_id):
+    filtered_flags = [flag for flag in flags_list if flag.id == flag_id]
+    return filtered_flags[0]
 
 def get_scene_by_id(scenes_list, scene_id):
     filtered_scenes = [scene for scene in scenes_list if scene.id == scene_id]
@@ -39,6 +43,7 @@ class GameWindow(arcade.Window):
         self.scenes = None
         self.actions = None
         self.stats = None
+        self.flags = None
         self.inventory = None
         self.items = None
         self.current_scene_id = None
@@ -78,6 +83,12 @@ class GameWindow(arcade.Window):
         for a in raw_stats["stats"]:
             stats.append(Stat(a["id"], a["text"], a["value"]))
 
+        # get flags
+        raw_flags = json_to_dict("content/flags.json")
+        flags = []
+        for a in raw_flags["flags"]:
+            flags.append(Flag(a["id"], a["value"]))
+
         # get items
         raw_items = json_to_dict("content/items.json")
         items = []
@@ -93,6 +104,7 @@ class GameWindow(arcade.Window):
         self.scenes = scenes
         self.actions = actions
         self.stats = stats
+        self.flags = flags
         self.items = items
         self.current_scene_id = START_SCENE_ID
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, self.current_scene_id)
@@ -204,6 +216,9 @@ class GameWindow(arcade.Window):
                 if effect_type == "CHANGE_STAT":
                     changed_stat = get_stat_by_id(self.stats, target)
                     changed_stat.change(value)
+                elif effect_type == "SET_FLAG":
+                    changed_flag = get_flag_by_id(self.flags, target)
+                    changed_flag.change(value)
                 elif effect_type == "ADD_ITEMS":
                     for item_id in effect["item_ids"]:
                         self.inventory.add_item_by_id(self.items, item_id)
