@@ -1,7 +1,7 @@
 import arcade
 import random
 from engine.settings import GAME_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH
-from engine.settings import START_SCENE_ID
+from engine.settings import START_SCENE_ID, START_STATE
 from engine.settings import FONT_PATH
 from classes.scene import Scene
 from classes.action import Action
@@ -100,7 +100,7 @@ class GameWindow(arcade.Window):
         self.menu.add_item("Инвентарь", STATE_INVENTORY)
 
         # config game
-        self.game_state = STATE_START
+        self.game_state = START_STATE
         self.scenes = scenes
         self.actions = actions
         self.stats = stats
@@ -174,11 +174,8 @@ class GameWindow(arcade.Window):
         if self.game_state == STATE_START or self.game_state == STATE_MAIN:
             for a in self.current_scene_actions:
                 if is_cursor_on_object(a, x, y):
-                    print(f"Выбран action id {a.id}")
                     self.apply_action_effects(a.effects)
-                    print(self.is_scene_changed)
                     if not self.is_scene_changed:
-                        print('here')
                         self.current_scene_id = a.target_scene
                     self.is_scene_changed = False
 
@@ -186,7 +183,6 @@ class GameWindow(arcade.Window):
         if self.game_state != STATE_START:
             for a in self.menu.buttons:
                 if is_cursor_on_object(a, x, y):
-                    print(f"Выбран menu item {a.text}")
                     self.game_state = a.target_game_state
 
         # inventory items
@@ -225,6 +221,14 @@ class GameWindow(arcade.Window):
                 elif effect_type == "CHANGE_GAME_STATE":
                     # print(f'gamestate changet to {target}')
                     self.game_state = target
+                elif effect_type == "THROW_DICE":
+                    dice_effects = effect["dice_effects"]
+                    player_dice = random.randint(1, len(dice_effects))
+                    for dice_effect in dice_effects:
+                        if dice_effect["number"] == player_dice:
+                            self.current_scene_id = dice_effect["target"]
+                            self.is_scene_changed = True
+                            break
                 elif effect_type == "CHECK_LUCK":   # экшен с изменением сцены должен быть один в списке экшенов,
                     # а в этом списке - в конце (для перестраховки - пока не понимаю, будет ли это работать корректно)
                     luck_check = random.choice([True, False])
