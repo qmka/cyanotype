@@ -37,6 +37,10 @@ class Inventory:
     def get_items(self):
         return self.items
 
+    def is_item_id_in_inventory(self, items_list, item_id):
+        item = get_item_by_id(items_list, item_id)
+        return item in self.items
+
     def clean_colors(self):
         for item in self.items:
             item.is_checked = False

@@ -75,7 +75,11 @@ class GameWindow(arcade.Window):
                 effects = a["effects"]
             else:
                 effects = []
-            actions.append(Action(a["id"], a["parent"], a["target"], a["text"], effects))
+            if "visibility_flag" in a:
+                visibility_flag = a["visibility_flag"]
+            else:
+                visibility_flag = None
+            actions.append(Action(a["id"], a["parent"], a["target"], a["text"], effects, visibility_flag))
 
         # get stats
         raw_stats = json_to_dict("content/stats.json")
@@ -143,7 +147,20 @@ class GameWindow(arcade.Window):
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, current_scene.id)
         current_scene.draw()
         scene_desc_height = current_scene.height
-        for index, action in enumerate(self.current_scene_actions):
+
+        displayed_actions = []
+        for action in self.current_scene_actions:
+            # check visibility flag
+            action_visibility = True
+            if action.visibility_flag:
+                flag = get_flag_by_id(self.flags, action.visibility_flag["id"])
+                if flag.value != action.visibility_flag["value"]:
+                    action_visibility = False
+
+            if action_visibility:
+                displayed_actions.append(action)
+
+        for index, action in enumerate(displayed_actions):
             action.draw(SCREEN_HEIGHT - scene_desc_height - 150 - 40 * index)
 
     def draw_sidebar_menu(self):
@@ -175,6 +192,7 @@ class GameWindow(arcade.Window):
             for a in self.current_scene_actions:
                 if is_cursor_on_object(a, x, y):
                     self.apply_action_effects(a.effects)
+                    self.apply_after_effects()
                     if not self.is_scene_changed:
                         self.current_scene_id = a.target_scene
                     self.is_scene_changed = False
@@ -202,6 +220,14 @@ class GameWindow(arcade.Window):
                 self.inventory.remove_item(self.inventory.checked_item)
                 self.inventory.checked_item = None
 
+    def apply_after_effects(self):
+        # here we insert any game logic that is executed after each player move
+
+        # if spear is in inventory then we set flag 3 to 1
+        if self.inventory.is_item_id_in_inventory(self.items, 0):
+            changed_flag = get_flag_by_id(self.flags, 3)
+            changed_flag.set(1)
+
     def apply_action_effects(self, effects):
         if effects:
             for effect in effects:
@@ -214,7 +240,7 @@ class GameWindow(arcade.Window):
                     changed_stat.change(value)
                 elif effect_type == "SET_FLAG":
                     changed_flag = get_flag_by_id(self.flags, target)
-                    changed_flag.change(value)
+                    changed_flag.set(value)
                 elif effect_type == "ADD_ITEMS":
                     for item_id in effect["item_ids"]:
                         self.inventory.add_item_by_id(self.items, item_id)
