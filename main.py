@@ -160,8 +160,15 @@ class GameWindow(arcade.Window):
             if action_visibility:
                 displayed_actions.append(action)
 
-        for index, action in enumerate(displayed_actions):
-            action.draw(SCREEN_HEIGHT - scene_desc_height - 150 - 40 * index)
+        if scene_desc_height > 150:
+            actions_top_y = SCREEN_HEIGHT - scene_desc_height - 50
+        else:
+            actions_top_y = SCREEN_HEIGHT - 175
+
+        actions_line_number = 1
+        for action in displayed_actions:
+            action.draw(actions_top_y - 25 * actions_line_number)
+            actions_line_number += action.height / 25 + 1
 
     def draw_sidebar_menu(self):
         self.menu.draw()

@@ -13,6 +13,7 @@ CHARACTER_HEIGHT = SCREEN_HEIGHT
 BACKGROUND_COLOR = arcade.color.BLACK
 TEXT_COLOR = arcade.color.WHITE
 TEXT_HOVER_COLOR = arcade.color.GOLD
+ACTION_TEXT_COLOR = arcade.color.CELESTE
 
 # FONT
 FONT_PATH = "fonts/FiraCode-SemiBold.ttf"
