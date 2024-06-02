@@ -42,28 +42,209 @@
       ]
     }, {
       "id": 4,
-      "text": "Бросить монету",
-      "parent": 69,
-      "target": 1,
+      "text": "В бой!",
+      "parent": 194,
+      "target": 43,
       "effects": [
         {
-          "effect_type": "CHANGE_STAT",
-          "target": 4,
-          "value": -1
+          "effect_type": "ADD_ITEMS",
+          "item_ids": [0, 1, 2]
         }
       ]
     }, {
       "id": 5,
-      "text": "Бросить монету",
-      "parent": 194,
-      "target": 1,
+      "text": "Защищаться",
+      "parent": 69,
+      "target": 43,
+      "effects": [
+        {
+          "effect_type": "ADD_ITEMS",
+          "item_ids": [0, 1, 2]
+        }
+      ]
+    }, {
+      "id": 6,
+      "text": "Войти в шахту",
+      "parent": 43,
+      "target": 112
+    }, {
+      "id": 7,
+      "text": "Пойти на север",
+      "parent": 112,
+      "target": 14
+    }, {
+      "id": 8,
+      "text": "Пойти на восток",
+      "parent": 112,
+      "target": 70
+    }, {
+      "id": 9,
+      "text": "Пойти на запад",
+      "parent": 112,
+      "target": 166
+    }, {
+      "id": 10,
+      "text": "Попробовать открыть дверь",
+      "parent": 14,
+      "target": 75,
+      "visibility_flag": {
+        "id": 0,
+        "value": 0
+      }
+    }, {
+      "id": 11,
+      "text": "Идти дальше по коридору",
+      "parent": 14,
+      "target": 198
+    }, {
+      "id": 12,
+      "text": "Вернуться назад на перекрёсток, чтобы выбрать другой путь",
+      "parent": 14,
+      "target": 112
+    }, {
+      "id": 13,
+      "text": "Высадить дверь плечом",
+      "parent": 75,
+      "target": 500,
+      "effects": [
+        {
+          "effect_type": "THROW_DICE",
+          "dice_effects": [
+            {
+              "number": 1,
+              "target": 19
+            }, {
+              "number": 2,
+              "target": 500
+            }, {
+              "number": 3,
+              "target": 500
+            }, {
+              "number": 4,
+              "target": 500
+            }, {
+              "number": 5,
+              "target": 500
+            }, {
+              "number": 6,
+              "target": 19
+            }
+          ]
+        }
+      ]
+    }, {
+      "id": 14,
+      "text": "Поберечь своё здоровье",
+      "parent": 75,
+      "target": 14
+    }, {
+      "id": 15,
+      "text": "Да ладно, это всего лишь царапина!",
+      "parent": 500,
+      "target": 75,
       "effects": [
         {
           "effect_type": "CHANGE_STAT",
-          "target": 4,
+          "target": 3,
           "value": -1
         }
       ]
+    }, {
+      "id": 16,
+      "text": "Приготовиться к сражению!",
+      "parent": 19,
+      "target": 85,
+      "effects": [
+        {
+          "effect_type": "SET_FLAG",
+          "target": 0,
+          "value": 1
+        }
+      ]
+    }, {
+      "id": 17,
+      "text": "Отлично, посмотрим, что там",
+      "parent": 85,
+      "target": 155
+    }, {
+      "id": 18,
+      "text": "Осмотрите сундук",
+      "parent": 155,
+      "target": 96,
+      "visibility_flag": {
+        "id": 1,
+        "value": 0
+      },
+      "effects": [
+        {
+          "effect_type": "SET_FLAG",
+          "target": 0,
+          "value": 1
+        }
+      ]
+    }, {
+      "id": 19,
+      "text": "Возьмёте одно из копий",
+      "parent": 155,
+      "target": 117,
+      "visibility_flag": {
+        "id": 2,
+        "value": 0
+      }
+    }, {
+      "id": 20,
+      "text": "Выйдете из комнаты",
+      "parent": 155,
+      "target": 14
+    }, {
+      "id": 21,
+      "text": "Но у вас уже есть одно копьё, и второе попросту не унести",
+      "parent": 117,
+      "target": 155,
+      "visibility_flag": {
+        "id": 3,
+        "value": 1
+      },
+      "effects": [
+        {
+          "effect_type": "SET_FLAG",
+          "target": 2,
+          "value": 1
+        }
+      ]
+    }, {
+      "id": 22,
+      "text": "Выбрать более-менее приличное копьё",
+      "parent": 117,
+      "target": 501,
+      "visibility_flag": {
+        "id": 3,
+        "value": 0
+      },
+      "effects": [
+        {
+          "effect_type": "ADD_ITEMS",
+          "item_ids": [0]
+        }, {
+          "effect_type": "SET_FLAG",
+          "target": 2,
+          "value": 1
+        }
+      ]
+    }, {
+      "id": 23,
+      "text": "Ещё зелёным морду раскрасить, и буду впрямь как гоблин-воин на стероидах",
+      "parent": 501,
+      "target": 155
+    }, {
+      "id": 24,
+      "text": "Открыть дверь и зайти",
+      "parent": 14,
+      "target": 155,
+      "visibility_flag": {
+        "id": 0,
+        "value": 1
+      }
     }
   ]
 }
