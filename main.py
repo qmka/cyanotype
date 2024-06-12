@@ -8,6 +8,7 @@ from classes.action import Action
 from classes.stat import Stat
 from classes.flag import Flag
 from classes.inventory import Inventory, Item
+from classes.consumables import ConsumablesList, ConsumableType, Consumable
 from classes.menu import SidebarMenu
 from engine.utils import json_to_dict, is_cursor_on_object
 
@@ -15,12 +16,12 @@ from engine.utils import json_to_dict, is_cursor_on_object
 STATE_START = 0
 STATE_MAIN = 1
 STATE_INVENTORY = 2
+STATE_CONSUMABLES = 3
 
 
 def filter_actions_by_scene_id(actions_list, scene_id):
     filtered_actions = [action for action in actions_list if action.parent_scene == scene_id]
     return filtered_actions
-
 
 def get_stat_by_id(stats_list, stat_id):
     filtered_stats = [stat for stat in stats_list if stat.id == stat_id]
@@ -45,6 +46,7 @@ class GameWindow(arcade.Window):
         self.stats = None
         self.flags = None
         self.inventory = None
+        self.consumables_list = None
         self.items = None
         self.current_scene_id = None
         self.current_scene_actions = None
@@ -99,9 +101,22 @@ class GameWindow(arcade.Window):
         for a in raw_items["items"]:
             items.append(Item(a["id"], a["text"], a["description"]))
 
+        # get consumables
+        raw_consumables_list = json_to_dict("content/consumables.json")
+        consumables_list = []
+        for t in raw_consumables_list["consumable_types"]:
+            consumables = []
+            this_type_consumables = t["consumables"]
+            for c in this_type_consumables:
+                # (consumable_id, consumable_type_id, text, description, max_value)
+                consumables.append(Consumable(c["id"], c["type"], c["text"], c["description"], c["max_value"],
+                                              c["effects"]))
+            consumables_list.append(ConsumableType(t["id"], t["name"], consumables))
+
         # setup sidebar menu
         self.menu = SidebarMenu()
         self.menu.add_item("Инвентарь", STATE_INVENTORY)
+        self.menu.add_item("Расходники", STATE_CONSUMABLES)
 
         # config game
         self.game_state = START_STATE
@@ -115,8 +130,14 @@ class GameWindow(arcade.Window):
 
         # fill inventory
         self.inventory = Inventory()
-        # self.inventory.add_item_by_id(self.items, 0)
+        self.inventory.add_item_by_id(self.items, 0)
         # self.inventory.add_item_by_id(self.items, 1)
+
+        # fill consumables
+        self.consumables_list = ConsumablesList(consumables_list)
+        self.consumables_list.set_consumable_value(0, 2)
+        self.consumables_list.set_consumable_value(1, 3)
+        self.consumables_list.set_consumable_value(2, 1)
 
     def on_draw(self):
         arcade.start_render()
@@ -132,6 +153,11 @@ class GameWindow(arcade.Window):
             self.draw_hero_stats()
             self.draw_sidebar_menu()
             self.draw_inventory()
+        elif self.game_state == STATE_CONSUMABLES:
+            self.draw_hero_portrait()
+            self.draw_hero_stats()
+            self.draw_sidebar_menu()
+            self.draw_consumables()
 
     def draw_hero_portrait(self):
         self.hero_portrait.center_x = DESCRIPTION_WIDTH + 100
@@ -176,6 +202,9 @@ class GameWindow(arcade.Window):
     def draw_inventory(self):
         self.inventory.draw()
 
+    def draw_consumables(self):
+        self.consumables_list.draw()
+
     def on_mouse_motion(self, x, y, dx, dy):
         # actions
         if self.game_state == STATE_START or self.game_state == STATE_MAIN:
@@ -191,6 +220,12 @@ class GameWindow(arcade.Window):
                 item.check_hover(x, y)
             self.inventory.back_button.check_hover(x, y)
             self.inventory.delete_item_button.check_hover(x, y)
+        # consumables
+        if self.game_state == STATE_CONSUMABLES:
+            for consumable_type in self.consumables_list.consumable_types:
+                for consumable in consumable_type.consumables:
+                    consumable.check_hover(x, y)
+            self.consumables_list.back_button.check_hover(x, y)
 
     def on_mouse_press(self, x, y, action, modifiers):
 
@@ -227,8 +262,21 @@ class GameWindow(arcade.Window):
                 self.inventory.remove_item(self.inventory.checked_item)
                 self.inventory.checked_item = None
 
+        # consumables
+        if self.game_state == STATE_CONSUMABLES:
+            for consumable_type in self.consumables_list.consumable_types:
+                for consumable in consumable_type.consumables:
+                    if is_cursor_on_object(consumable, x, y):
+                        self.consumables_list.clean_colors()
+                        consumable_type.checked_item = consumable
+
+            if self.consumables_list.back_button.check_press(x, y):
+                self.consumables_list.back_button.is_pressed = False
+                self.consumables_list.checked_item = None
+                self.game_state = STATE_MAIN
+
     def apply_after_effects(self):
-        # here we insert any game logic that is executed after each player move
+        # here we insert any game logic that will execute after each player move
 
         # if spear is in inventory then we set flag 3 to 1
         if self.inventory.is_item_id_in_inventory(self.items, 0):

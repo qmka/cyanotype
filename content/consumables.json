@@ -1,0 +1,58 @@
+{
+  "consumable_types": [
+    {
+      "id": 0,
+      "name": "Зелья",
+      "consumables": [
+        {
+          "id": 0,
+          "type": 0,
+          "text": "Малое зелье здоровья",
+          "description": "Повышает здоровье на 5 HP",
+          "max_value": 10,
+          "effects": [
+            {
+              "effect_type": "CHANGE_STAT",
+              "target": 3,
+              "value": 5
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "type": 0,
+          "text": "Зелье силы",
+          "description": "Повышает силу на 1",
+          "max_value": 10,
+          "effects": [
+            {
+              "effect_type": "CHANGE_STAT",
+              "target": 0,
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Прочее",
+      "consumables": [
+        {
+          "id": 2,
+          "type": 1,
+          "text": "Еда",
+          "description": "Порция еды восстанавливает 2 HP",
+          "max_value": 3,
+          "effects": [
+            {
+              "effect_type": "CHANGE_STAT",
+              "target": 3,
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

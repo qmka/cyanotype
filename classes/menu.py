@@ -48,10 +48,10 @@ class SidebarMenu:
         self.buttons = []
 
     def add_item(self, text, target_game_state):
-        self.buttons.append(SidebarMenuItem(self.x, self.y + 40 * self.items_counter, text, target_game_state))
+        self.buttons.append(SidebarMenuItem(self.x, self.y - 40 * self.items_counter, text, target_game_state))
         self.items_counter += 1
 
     def draw(self):
         if self.buttons:
             for button in self.buttons:
-                button.draw(self.x, self.y)
+                button.draw(self.x, button.y)
