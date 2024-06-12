@@ -1,0 +1,21 @@
+{
+  "flags": [
+    {
+      "id": 0,
+      "description": "Is door (14) opened?",
+      "value": 0
+    }, {
+      "id": 1,
+      "description": "Was the chest in 155 examined?",
+      "value": 0
+    }, {
+      "id": 2,
+      "description": "Was the spear in 155 took?",
+      "value": 0
+    }, {
+      "id": 3,
+      "description": "Have a spear?",
+      "value": 0
+    }
+  ]
+}
