@@ -128,13 +128,14 @@ class GameWindow(arcade.Window):
         self.current_scene_id = START_SCENE_ID
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, self.current_scene_id)
 
-        # fill inventory
         self.inventory = Inventory()
+        self.consumables_list = ConsumablesList(consumables_list)
+
+        # fill inventory
         self.inventory.add_item_by_id(self.items, 0)
         # self.inventory.add_item_by_id(self.items, 1)
 
         # fill consumables
-        self.consumables_list = ConsumablesList(consumables_list)
         self.consumables_list.set_consumable_value(0, 2)
         self.consumables_list.set_consumable_value(1, 3)
         self.consumables_list.set_consumable_value(2, 1)
@@ -223,6 +224,7 @@ class GameWindow(arcade.Window):
         # consumables
         if self.game_state == STATE_CONSUMABLES:
             for consumable_type in self.consumables_list.consumable_types:
+                consumable_type.use_consumable_button.check_hover(x, y)
                 for consumable in consumable_type.consumables:
                     consumable.check_hover(x, y)
             self.consumables_list.back_button.check_hover(x, y)
@@ -233,7 +235,7 @@ class GameWindow(arcade.Window):
         if self.game_state == STATE_START or self.game_state == STATE_MAIN:
             for a in self.current_scene_actions:
                 if is_cursor_on_object(a, x, y):
-                    self.apply_action_effects(a.effects)
+                    self.apply_effects(a.effects)
                     self.apply_after_effects()
                     if not self.is_scene_changed:
                         self.current_scene_id = a.target_scene
@@ -249,7 +251,7 @@ class GameWindow(arcade.Window):
         if self.game_state == STATE_INVENTORY:
             for a in self.inventory.items:
                 if is_cursor_on_object(a, x, y):
-                    self.inventory.clean_colors()
+                    self.inventory.uncheck_all()
                     self.inventory.checked_item = a
 
             if self.inventory.back_button.check_press(x, y):
@@ -265,10 +267,17 @@ class GameWindow(arcade.Window):
         # consumables
         if self.game_state == STATE_CONSUMABLES:
             for consumable_type in self.consumables_list.consumable_types:
-                for consumable in consumable_type.consumables:
-                    if is_cursor_on_object(consumable, x, y):
-                        self.consumables_list.clean_colors()
-                        consumable_type.checked_item = consumable
+                # if use button pressed
+                if consumable_type.checked_item and consumable_type.use_consumable_button.check_press(x, y):
+                    consumable_type.checked_item.use()
+                    self.apply_effects(consumable_type.checked_item.effects)
+                    if consumable_type.checked_item.value == 0:
+                        self.consumables_list.uncheck_all()
+                else:
+                    for consumable in consumable_type.consumables:
+                        if is_cursor_on_object(consumable, x, y):
+                            self.consumables_list.uncheck_all()
+                            consumable_type.checked_item = consumable
 
             if self.consumables_list.back_button.check_press(x, y):
                 self.consumables_list.back_button.is_pressed = False
@@ -283,7 +292,7 @@ class GameWindow(arcade.Window):
             changed_flag = get_flag_by_id(self.flags, 3)
             changed_flag.set(1)
 
-    def apply_action_effects(self, effects):
+    def apply_effects(self, effects):
         if effects:
             for effect in effects:
                 effect_type = effect["effect_type"]

@@ -2,7 +2,7 @@ import arcade
 from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT
 from engine.settings import FONT_NAME, FONT_SIZE
 from engine.utils import get_arcade_text_size, is_cursor_on_object
-from interface.buttons import BackButton
+from interface.buttons import BackButton, UseConsumableButton
 
 
 def get_consumable_by_id(consumables_list, consumable_id):
@@ -11,6 +11,13 @@ def get_consumable_by_id(consumables_list, consumable_id):
             if c.id == consumable_id:
                 return c
     return None
+
+
+def is_player_have_consumables_of_type(consumable_type):
+    for c in consumable_type.consumables:
+        if c.value > 0:
+            return True
+    return False
 
 
 class ConsumablesList:
@@ -26,11 +33,17 @@ class ConsumablesList:
         consumable = get_consumable_by_id(self, consumable_id)
         consumable.set_value(value)
 
-    def clean_colors(self):
+    def uncheck_all(self):
         for consumable_type in self.consumable_types:
             consumable_type.checked_item = None
             for consumable in consumable_type.consumables:
                 consumable.is_checked = False
+
+    def is_player_have_consumables(self):
+        for consumable_type in self.consumable_types:
+            if is_player_have_consumables_of_type(consumable_type):
+                return True
+        return False
 
     def draw(self):
         cursor_y = SCREEN_HEIGHT - 50
@@ -45,14 +58,16 @@ class ConsumablesList:
             anchor_y="top"
         )
         title.draw()
-        # cursor_y -= 50
-        # consumable type
-        if self.consumable_types:
+
+        cursor_y -= 25
+        if self.consumable_types and self.is_player_have_consumables():
             for index, consumable_type in enumerate(self.consumable_types):
-                consumable_y = (index + 1) * 25
-                cursor_y = cursor_y - consumable_y - 25
-                cursor_y = consumable_type.draw(cursor_y)
+                if is_player_have_consumables_of_type(consumable_type):
+                    consumable_y = (index + 1) * 25
+                    cursor_y = cursor_y - consumable_y
+                    cursor_y = consumable_type.draw(cursor_y)
         else:
+            cursor_y -= 25
             empty_text = arcade.Text(
                 "Пусто",
                 self.x,
@@ -64,9 +79,8 @@ class ConsumablesList:
                 anchor_y="top"
             )
             empty_text.draw()
-            cursor_y -= 25
 
-        self.back_button.draw(self.x, cursor_y - 80)
+        self.back_button.draw(self.x, cursor_y - 50)
 
 class ConsumableType:
     # Зелья, заклинания, еда
@@ -75,44 +89,36 @@ class ConsumableType:
         self.name = name
         self.consumables = consumables
         self.x = 50
+        self.y = SCREEN_HEIGHT - 50
         self.checked_item = None
 
+        self.use_consumable_button = UseConsumableButton()
+
     def draw(self, cursor_y):
-        # выводим заголовок
-        title = arcade.Text(
-            self.name,
-            self.x,
-            cursor_y,
-            arcade.color.PINK,
-            font_name=FONT_NAME,
-            font_size=FONT_SIZE,
-            anchor_x="left",
-            anchor_y="top"
-        )
-        title.draw()
-
         if self.consumables:
-            cursor_y -= 25
-            for index, item in enumerate(self.consumables):
-                cursor_y = cursor_y - index * 25
-                item.draw(self.x, cursor_y)
-
-            if self.checked_item is not None:
-                description_height = self.checked_item.draw_description(350, 500)
-                self.checked_item.is_checked = True
-        else:
-            cursor_y = cursor_y - 50
-            empty_text = arcade.Text(
-                "Пусто",
+            # выводим заголовок
+            title = arcade.Text(
+                self.name,
                 self.x,
                 cursor_y,
-                TEXT_COLOR,
+                arcade.color.PINK,
                 font_name=FONT_NAME,
                 font_size=FONT_SIZE,
                 anchor_x="left",
                 anchor_y="top"
             )
-            empty_text.draw()
+            title.draw()
+
+            # cursor_y -= 25
+            for consumable in self.consumables:
+                if consumable.value > 0:
+                    cursor_y -= 25
+                    consumable.draw(self.x, cursor_y)
+
+            if self.checked_item is not None:
+                description_height = self.checked_item.draw_description(350, 500)
+                self.checked_item.is_checked = True
+                self.use_consumable_button.draw(350, self.y - description_height - 55)
         return cursor_y
 
 class Consumable:
@@ -139,6 +145,9 @@ class Consumable:
     def set_value(self, value):
         self.value = value
 
+    def use(self):
+        self.value -= 1
+
     def draw(self, x, y):
         self.x = x
         self.y = y
@@ -149,8 +158,10 @@ class Consumable:
         else:
             self.color = TEXT_COLOR
 
-        action = arcade.Text(
-            self.text,
+        consumable_text_template = f"{self.text}: {self.value}"
+
+        consumable_text = arcade.Text(
+            consumable_text_template,
             self.x,
             self.y,
             self.color,
@@ -159,7 +170,11 @@ class Consumable:
             anchor_x="left",
             anchor_y="top"
         )
-        action.draw()
+        _size = get_arcade_text_size(consumable_text)
+        self.width = _size["width"]
+        self.height = _size["height"]
+
+        consumable_text.draw()
 
     def draw_description(self, x, y):
         description = arcade.Text(
