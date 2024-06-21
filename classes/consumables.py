@@ -145,6 +145,9 @@ class Consumable:
     def set_value(self, value):
         self.value = value
 
+    def change(self, value):
+        self.value += value
+
     def use(self):
         self.value -= 1
 
