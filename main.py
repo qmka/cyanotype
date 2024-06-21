@@ -23,17 +23,16 @@ def filter_actions_by_scene_id(actions_list, scene_id):
     filtered_actions = [action for action in actions_list if action.parent_scene == scene_id]
     return filtered_actions
 
-def get_stat_by_id(stats_list, stat_id):
-    filtered_stats = [stat for stat in stats_list if stat.id == stat_id]
-    return filtered_stats[0]
+def get_by_id(entities_list, entity_id):
+    return next((entity for entity in entities_list if entity.id == entity_id), None)
 
-def get_flag_by_id(flags_list, flag_id):
-    filtered_flags = [flag for flag in flags_list if flag.id == flag_id]
-    return filtered_flags[0]
 
-def get_scene_by_id(scenes_list, scene_id):
-    filtered_scenes = [scene for scene in scenes_list if scene.id == scene_id]
-    return filtered_scenes[0]
+def get_consumable_by_id(consumables_list, consumable_id):
+    for t in consumables_list.consumable_types:
+        for c in t.consumables:
+            if c.id == consumable_id:
+                return c
+    return None
 
 
 class GameWindow(arcade.Window):
@@ -132,13 +131,13 @@ class GameWindow(arcade.Window):
         self.consumables_list = ConsumablesList(consumables_list)
 
         # fill inventory
-        self.inventory.add_item_by_id(self.items, 0)
+        # self.inventory.add_item_by_id(self.items, 0)
         # self.inventory.add_item_by_id(self.items, 1)
 
         # fill consumables
-        self.consumables_list.set_consumable_value(0, 2)
-        self.consumables_list.set_consumable_value(1, 3)
-        self.consumables_list.set_consumable_value(2, 1)
+        # self.consumables_list.set_consumable_value(0, 2)
+        self.consumables_list.set_consumable_value(1, 2)
+        self.consumables_list.set_consumable_value(2, 2)
 
     def on_draw(self):
         arcade.start_render()
@@ -170,7 +169,7 @@ class GameWindow(arcade.Window):
             stat.draw(SCREEN_HEIGHT - 200 - 30 * index)
 
     def draw_scene_with_actions(self):
-        current_scene = get_scene_by_id(self.scenes, self.current_scene_id)
+        current_scene = get_by_id(self.scenes, self.current_scene_id)
         self.current_scene_actions = filter_actions_by_scene_id(self.actions, current_scene.id)
         current_scene.draw()
         scene_desc_height = current_scene.height
@@ -180,7 +179,7 @@ class GameWindow(arcade.Window):
             # check visibility flag
             action_visibility = True
             if action.visibility_flag:
-                flag = get_flag_by_id(self.flags, action.visibility_flag["id"])
+                flag = get_by_id(self.flags, action.visibility_flag["id"])
                 if flag.value != action.visibility_flag["value"]:
                     action_visibility = False
 
@@ -289,7 +288,7 @@ class GameWindow(arcade.Window):
 
         # if spear is in inventory then we set flag 3 to 1
         if self.inventory.is_item_id_in_inventory(self.items, 0):
-            changed_flag = get_flag_by_id(self.flags, 3)
+            changed_flag = get_by_id(self.flags, 3)
             changed_flag.set(1)
 
     def apply_effects(self, effects):
@@ -300,14 +299,17 @@ class GameWindow(arcade.Window):
                 value = effect["value"] if "value" in effect else None
 
                 if effect_type == "CHANGE_STAT":
-                    changed_stat = get_stat_by_id(self.stats, target)
+                    changed_stat = get_by_id(self.stats, target)
                     changed_stat.change(value)
                 elif effect_type == "SET_FLAG":
-                    changed_flag = get_flag_by_id(self.flags, target)
+                    changed_flag = get_by_id(self.flags, target)
                     changed_flag.set(value)
                 elif effect_type == "ADD_ITEMS":
                     for item_id in effect["item_ids"]:
                         self.inventory.add_item_by_id(self.items, item_id)
+                elif effect_type == "ADD_CONSUMABLE":
+                    changed_consumable = get_consumable_by_id(self.consumables_list, target)
+                    changed_consumable.change(value)
                 elif effect_type == "CHANGE_GAME_STATE":
                     # print(f'gamestate changet to {target}')
                     self.game_state = target
