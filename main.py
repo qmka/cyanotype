@@ -10,7 +10,7 @@ from classes.flag import Flag
 from classes.inventory import Inventory, Item
 from classes.consumables import ConsumablesList, ConsumableType, Consumable
 from classes.menu import SidebarMenu
-from engine.utils import json_to_dict, is_cursor_on_object
+from engine.utils import read_content, is_cursor_on_object
 
 # Game States
 STATE_START = 0
@@ -63,13 +63,13 @@ class GameWindow(arcade.Window):
         self.hero_portrait = arcade.Sprite(hero_portrait_image_path)
 
         # get scenes
-        raw_scenes = json_to_dict("content/scenes.json")
+        raw_scenes = read_content("content/scenes.yaml")
         scenes = []
         for a in raw_scenes["scenes"]:
             scenes.append(Scene(a["id"], a["description"]))
 
         # get actions
-        raw_actions = json_to_dict("content/actions.json")
+        raw_actions = read_content("content/actions.yaml")
         actions = []
         for a in raw_actions["actions"]:
             if "effects" in a:
@@ -83,25 +83,25 @@ class GameWindow(arcade.Window):
             actions.append(Action(a["id"], a["parent"], a["target"], a["text"], effects, visibility_flag))
 
         # get stats
-        raw_stats = json_to_dict("content/stats.json")
+        raw_stats = read_content("content/stats.yaml")
         stats = []
         for a in raw_stats["stats"]:
             stats.append(Stat(a["id"], a["text"], a["value"]))
 
         # get flags
-        raw_flags = json_to_dict("content/flags.json")
+        raw_flags = read_content("content/flags.yaml")
         flags = []
         for a in raw_flags["flags"]:
             flags.append(Flag(a["id"], a["value"]))
 
         # get items
-        raw_items = json_to_dict("content/items.json")
+        raw_items = read_content("content/items.yaml")
         items = []
         for a in raw_items["items"]:
             items.append(Item(a["id"], a["text"], a["description"]))
 
         # get consumables
-        raw_consumables_list = json_to_dict("content/consumables.json")
+        raw_consumables_list = read_content("content/consumables.yaml")
         consumables_list = []
         for t in raw_consumables_list["consumable_types"]:
             consumables = []

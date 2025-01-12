@@ -1,8 +1,9 @@
 import json
 import arcade
+import yaml
 from engine.settings import FONT_SIZE, FONT_NAME, DESCRIPTION_WIDTH
 
-
+'''
 def json_to_dict(json_file):
     try:
         with open(json_file, "r", encoding="utf-8") as json_file:
@@ -14,7 +15,18 @@ def json_to_dict(json_file):
     except json.decoder.JSONDecodeError:
         print(f"Unable to extract JSON from '{json_file}'")
         return None
-
+'''
+def read_content(yaml_file):
+    try:
+        with open(yaml_file, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+            return data
+    except FileNotFoundError:
+        print(f"File '{yaml_file}' Not Found")
+        return None
+    except yaml.YAMLError:
+        print(f"Unable to extract YAML from '{yaml_file}'")
+        return None
 
 def get_arcade_text_size(arcade_object, multiline=False, multiline_width=None):
     obj = arcade.Text(

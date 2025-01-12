@@ -1,0 +1,13 @@
+stats:
+  - id: 0
+    text: "Мастерство"
+    value: 10
+  - id: 1
+    text: "Здоровье"
+    value: 20
+  - id: 2
+    text: "Удача"
+    value: 6
+  - id: 3
+    text: "Деньги"
+    value: 0

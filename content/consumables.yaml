@@ -1,0 +1,43 @@
+consumable_types:
+  - id: 0
+    name: "Зелья"
+    consumables:
+      - id: 0
+        type: 0
+        text: "Зелье мастерства"
+        description: "Повышает мастерство на 1"
+        max_value: 10
+        effects:
+          - effect_type: "CHANGE_STAT"
+            target: 0
+            value: 1
+      - id: 1
+        type: 0
+        text: "Зелье здоровья"
+        description: "Восстанавливает 5 единиц здоровья"
+        max_value: 10
+        effects:
+          - effect_type: "CHANGE_STAT"
+            target: 1
+            value: 5
+      - id: 2
+        type: 0
+        text: "Зелье удачи"
+        description: "Повышает удачу на 1"
+        max_value: 10
+        effects:
+          - effect_type: "CHANGE_STAT"
+            target: 2
+            value: 1
+  - id: 1
+    name: "Прочее"
+    consumables:
+      - id: 3
+        type: 1
+        text: "Еда"
+        description: "Порция еды восстанавливает 2 HP"
+        max_value: 3
+        effects:
+          - effect_type: "CHANGE_STAT"
+            target: 3
+            value: 2

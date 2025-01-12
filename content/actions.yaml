@@ -1,0 +1,222 @@
+actions:
+  - id: 0
+    text: "Начать игру"
+    parent: 0
+    target: 1
+    effects:
+      - effect_type: "CHANGE_GAME_STATE"
+        target: 1
+  - id: 1
+    text: "Выйти на рабочий стол"
+    parent: 0
+    target: 0
+  - id: 2
+    text: "Войти в тоннель"
+    parent: 1
+    target: 0
+    effects:
+      - effect_type: "CHECK_LUCK"
+        good_target: 194
+        bad_target: 69
+  - id: 4
+    text: "В бой!"
+    parent: 194
+    target: 43
+    effects:
+      - effect_type: "ADD_ITEMS"
+        item_ids:
+          - 0
+          - 1
+          - 2
+  - id: 5
+    text: "Защищаться"
+    parent: 69
+    target: 43
+    effects:
+      - effect_type: "ADD_ITEMS"
+        item_ids:
+          - 0
+          - 1
+          - 2
+  - id: 6
+    text: "Войти в шахту"
+    parent: 43
+    target: 112
+  - id: 7
+    text: "Пойти на север"
+    parent: 112
+    target: 14
+  - id: 8
+    text: "Пойти на восток"
+    parent: 112
+    target: 70
+  - id: 9
+    text: "Пойти на запад"
+    parent: 112
+    target: 166
+  - id: 10
+    text: "Попробовать открыть дверь"
+    parent: 14
+    target: 75
+    visibility_flag:
+      id: 0
+      value: 0
+  - id: 11
+    text: "Идти дальше по коридору"
+    parent: 14
+    target: 198
+  - id: 12
+    text: "Вернуться назад на перекрёсток, чтобы выбрать другой путь"
+    parent: 14
+    target: 112
+  - id: 13
+    text: "Высадить дверь плечом"
+    parent: 75
+    target: 500
+    effects:
+      - effect_type: "THROW_DICE"
+        dice_effects:
+          - number: 1
+            target: 19
+          - number: 2
+            target: 500
+          - number: 3
+            target: 500
+          - number: 4
+            target: 500
+          - number: 5
+            target: 500
+          - number: 6
+            target: 19
+  - id: 14
+    text: "Поберечь своё здоровье"
+    parent: 75
+    target: 14
+  - id: 15
+    text: "Да ладно, это всего лишь царапина!"
+    parent: 500
+    target: 75
+    effects:
+      - effect_type: "CHANGE_STAT"
+        target: 1
+        value: -1
+  - id: 16
+    text: "Приготовиться к сражению!"
+    parent: 19
+    target: 85
+    effects:
+      - effect_type: "SET_FLAG"
+        target: 0
+        value: 1
+  - id: 17
+    text: "Отлично, посмотрим, что там"
+    parent: 85
+    target: 155
+  - id: 18
+    text: "Осмотрите сундук"
+    parent: 155
+    target: 96
+    visibility_flag:
+      id: 1
+      value: 0
+    effects:
+      - effect_type: "SET_FLAG"
+        target: 1
+        value: 1
+      - effect_type: "CHANGE_STAT"
+        target: 3
+        value: 12
+      - effect_type: "ADD_CONSUMABLE"
+        target: 2
+        value: 2
+  - id: 19
+    text: "Возьмёте одно из копий"
+    parent: 155
+    target: 117
+    visibility_flag:
+      id: 2
+      value: 0
+  - id: 20
+    text: "Выйдете из комнаты"
+    parent: 155
+    target: 14
+  - id: 21
+    text: "Но у вас уже есть одно копьё, и второе попросту не унести"
+    parent: 117
+    target: 155
+    visibility_flag:
+      id: 3
+      value: 1
+    effects:
+      - effect_type: "SET_FLAG"
+        target: 2
+        value: 1
+  - id: 22
+    text: "Выбрать более-менее приличное копьё"
+    parent: 117
+    target: 501
+    visibility_flag:
+      id: 3
+      value: 0
+    effects:
+      - effect_type: "ADD_ITEMS"
+        item_ids:
+          - 0
+      - effect_type: "SET_FLAG"
+        target: 2
+        value: 1
+  - id: 23
+    text: "Ещё зелёным морду раскрасить, и буду впрямь как гоблин-воин на стероидах"
+    parent: 501
+    target: 155
+  - id: 24
+    text: "Открыть дверь и зайти"
+    parent: 14
+    target: 155
+    visibility_flag:
+      id: 0
+      value: 1
+  - id: 25
+    text: "Открыть мерзкий мешочек"
+    parent: 96
+    target: 176
+  - id: 26
+    text: "Не рисковать и закончить осмотр сундука"
+    parent: 96
+    target: 155
+  - id: 27
+    text: "Вы не можете сдержать тошноту... (-2 HP)"
+    parent: 176
+    target: 155
+    effects:
+      - effect_type: "CHANGE_STAT"
+        target: 1
+        value: -2
+  - id: 28
+    text: "Повернуть в боковой проход"
+    parent: 198
+    target: 123
+  - id: 29
+    text: "Продолжить движение на север"
+    parent: 198
+    target: 72
+  - id: 30
+    text: "Пойдёте по новому проходу на север"
+    parent: 123
+    target: 83
+  - id: 31
+    text: "Пойдёте по новому проходу на юг"
+    parent: 123
+    target: 171
+  - id: 32
+    text: "Откроете южную дверь"
+    parent: 171
+    target: 91
+  - id: 33
+    text: "Откроете северную дверь"
+    parent: 171
+    target: 8
+  - id: 34
+    text: "Продолжите движение и повернёте за угол"
+    parent: 171
+    target: 42
