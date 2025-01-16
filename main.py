@@ -55,6 +55,8 @@ class GameWindow(arcade.Window):
         self.hero_portrait = None
         self.menu = None
 
+        self.timer = None
+
     def setup(self):
 
         # upload font
@@ -121,6 +123,7 @@ class GameWindow(arcade.Window):
 
         # config game
         self.game_state = START_STATE
+        self.timer = 0
         self.scenes = scenes
         self.actions = actions
         self.stats = stats
@@ -142,14 +145,18 @@ class GameWindow(arcade.Window):
         self.consumables_list.set_consumable_value(2, 2)
 
     def on_draw(self):
+        self.timer += 1
         arcade.start_render()
+
         if self.game_state == STATE_MAIN:
             self.draw_hero_portrait()
             self.draw_hero_stats()
             self.draw_sidebar_menu()
             self.draw_scene_with_actions()
+            self.draw_timer()
         elif self.game_state == STATE_START:
             self.draw_scene_with_actions()
+            self.draw_timer()
         elif self.game_state == STATE_INVENTORY:
             self.draw_hero_portrait()
             self.draw_hero_stats()
@@ -165,6 +172,17 @@ class GameWindow(arcade.Window):
             self.draw_hero_stats()
             self.draw_sidebar_menu()
 
+    def draw_timer(self):
+        arcade.Text(
+            f"timer: {str(self.timer)}",
+            50,
+            50,
+            arcade.color.RED,
+            font_name="Fira Code SemiBold",
+            font_size=12,
+            anchor_x="left",
+            anchor_y="top"
+        ).draw()
 
     def draw_hero_portrait(self):
         arcade.draw_lrtb_rectangle_filled(0, DESCRIPTION_WIDTH, DESCRIPTION_HEIGHT, 0, arcade.color.AFRICAN_VIOLET)
@@ -176,7 +194,7 @@ class GameWindow(arcade.Window):
 
     def draw_hero_stats(self):
         for index, stat in enumerate(self.stats):
-            stat.draw(SCREEN_HEIGHT - CHARACTER_WIDTH - 30 * index)
+            stat.draw(SCREEN_HEIGHT - CHARACTER_WIDTH - 30 * index, self.timer)
 
     def draw_scene_with_actions(self):
         current_scene = get_by_id(self.scenes, self.current_scene_id)
@@ -311,6 +329,7 @@ class GameWindow(arcade.Window):
                 if effect_type == "CHANGE_STAT":
                     changed_stat = get_by_id(self.stats, target)
                     changed_stat.change(value)
+                    changed_stat.set_flash(self.timer, value)
                 elif effect_type == "SET_FLAG":
                     changed_flag = get_by_id(self.flags, target)
                     changed_flag.set(value)
