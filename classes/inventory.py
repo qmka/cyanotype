@@ -1,5 +1,5 @@
 import arcade
-from engine.settings import TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT
+from engine.settings import TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT, TOP_MARGIN, SECOND_COLUMN_X
 from engine.settings import FONT_NAME, FONT_SIZE
 from engine.utils import get_arcade_text_size, is_cursor_on_object
 from interface.buttons import BackButton, DeleteItemButton
@@ -13,7 +13,7 @@ def get_item_by_id(items_list, item_id):
 class Inventory:
     def __init__(self):
         self.x = 50
-        self.y = SCREEN_HEIGHT - 50
+        self.y = SCREEN_HEIGHT - TOP_MARGIN
         self.items_count = 0
         self.items = []
         self.color = arcade.color.GOLDEN_YELLOW
@@ -50,7 +50,7 @@ class Inventory:
         title = arcade.Text(
             "Инвентарь",
             50,
-            SCREEN_HEIGHT - 50,
+            SCREEN_HEIGHT - TOP_MARGIN,
             arcade.color.BLUEBERRY,
             font_name=FONT_NAME,
             font_size=FONT_SIZE,
@@ -66,9 +66,10 @@ class Inventory:
                 last_item_y = item_y
 
             if self.checked_item is not None:
-                description_height = self.checked_item.draw_description(350, 500)
+                self.checked_item.draw_title(350, self.y)
+                description_height = self.checked_item.draw_description(SECOND_COLUMN_X, self.y - 50)
                 self.checked_item.is_checked = True
-                self.delete_item_button.draw(520, self.y - description_height - 55)
+                self.delete_item_button.draw(SECOND_COLUMN_X, self.y - description_height - 75)
         else:
             empty_text = arcade.Text(
                 "Пусто",
@@ -125,6 +126,30 @@ class Item:
         )
         action.draw()
 
+    def draw_title(self, x, y):
+        title = self.text.upper()
+        underscores = "_" * len(title)
+        arcade.Text(
+            title,
+            x,
+            y,
+            TEXT_COLOR,
+            font_size=FONT_SIZE,
+            font_name=FONT_NAME,
+            anchor_x="left",
+            anchor_y="top"
+        ).draw()
+        arcade.Text(
+            underscores,
+            x,
+            y - 10,
+            TEXT_COLOR,
+            font_size=FONT_SIZE,
+            font_name=FONT_NAME,
+            anchor_x="left",
+            anchor_y="top"
+        ).draw()
+
     def draw_description(self, x, y):
         description = arcade.Text(
             self.description,
@@ -134,7 +159,7 @@ class Item:
             font_size=FONT_SIZE,
             font_name=FONT_NAME,
             multiline=True,
-            width=250,
+            width=550,
             anchor_x="left",
             anchor_y="top"
         )

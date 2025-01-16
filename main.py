@@ -1,6 +1,7 @@
 import arcade
 import random
-from engine.settings import GAME_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH
+from engine.settings import GAME_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, DESCRIPTION_WIDTH, DESCRIPTION_HEIGHT, \
+    CHARACTER_WIDTH, CHARACTER_MARGIN
 from engine.settings import START_SCENE_ID, START_STATE
 from engine.settings import FONT_PATH
 from classes.scene import Scene
@@ -17,6 +18,7 @@ STATE_START = 0
 STATE_MAIN = 1
 STATE_INVENTORY = 2
 STATE_CONSUMABLES = 3
+STATE_BATTLE = 4
 
 
 def filter_actions_by_scene_id(actions_list, scene_id):
@@ -158,15 +160,23 @@ class GameWindow(arcade.Window):
             self.draw_hero_stats()
             self.draw_sidebar_menu()
             self.draw_consumables()
+        elif self.game_state == STATE_BATTLE:
+            self.draw_hero_portrait()
+            self.draw_hero_stats()
+            self.draw_sidebar_menu()
+
 
     def draw_hero_portrait(self):
-        self.hero_portrait.center_x = DESCRIPTION_WIDTH + 100
-        self.hero_portrait.center_y = 500
+        arcade.draw_lrtb_rectangle_filled(0, DESCRIPTION_WIDTH, DESCRIPTION_HEIGHT, 0, arcade.color.AFRICAN_VIOLET)
+        self.hero_portrait.scale = (CHARACTER_WIDTH - CHARACTER_MARGIN * 2) / CHARACTER_WIDTH
+        self.hero_portrait.center_x = DESCRIPTION_WIDTH + (CHARACTER_WIDTH / 2)
+        self.hero_portrait.center_y = DESCRIPTION_HEIGHT - (CHARACTER_WIDTH / 2)
+
         self.hero_portrait.draw()
 
     def draw_hero_stats(self):
         for index, stat in enumerate(self.stats):
-            stat.draw(SCREEN_HEIGHT - 200 - 30 * index)
+            stat.draw(SCREEN_HEIGHT - CHARACTER_WIDTH - 30 * index)
 
     def draw_scene_with_actions(self):
         current_scene = get_by_id(self.scenes, self.current_scene_id)
@@ -187,9 +197,9 @@ class GameWindow(arcade.Window):
                 displayed_actions.append(action)
 
         if scene_desc_height > 150:
-            actions_top_y = SCREEN_HEIGHT - scene_desc_height - 50
+            actions_top_y = SCREEN_HEIGHT - scene_desc_height - 75
         else:
-            actions_top_y = SCREEN_HEIGHT - 175
+            actions_top_y = SCREEN_HEIGHT - 200
 
         actions_line_number = 1
         for action in displayed_actions:

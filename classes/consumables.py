@@ -1,5 +1,5 @@
 import arcade
-from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT
+from engine.settings import DESCRIPTION_WIDTH, TEXT_COLOR, TEXT_HOVER_COLOR, SCREEN_HEIGHT, TOP_MARGIN, SECOND_COLUMN_X
 from engine.settings import FONT_NAME, FONT_SIZE
 from engine.utils import get_arcade_text_size, is_cursor_on_object
 from interface.buttons import BackButton, UseConsumableButton
@@ -23,7 +23,7 @@ def is_player_have_consumables_of_type(consumable_type):
 class ConsumablesList:
     def __init__(self, consumable_types):
         self.x = 50
-        self.y = SCREEN_HEIGHT - 50
+        self.y = SCREEN_HEIGHT - TOP_MARGIN
         self.consumable_types = consumable_types
         self.color = arcade.color.GOLDEN_YELLOW
         # self.checked_item = None
@@ -46,7 +46,7 @@ class ConsumablesList:
         return False
 
     def draw(self):
-        cursor_y = SCREEN_HEIGHT - 50
+        cursor_y = SCREEN_HEIGHT - TOP_MARGIN
         title = arcade.Text(
             "Расходники",
             50,
@@ -89,7 +89,7 @@ class ConsumableType:
         self.name = name
         self.consumables = consumables
         self.x = 50
-        self.y = SCREEN_HEIGHT - 50
+        self.y = SCREEN_HEIGHT - TOP_MARGIN
         self.checked_item = None
 
         self.use_consumable_button = UseConsumableButton()
@@ -116,9 +116,10 @@ class ConsumableType:
                     consumable.draw(self.x, cursor_y)
 
             if self.checked_item is not None:
-                description_height = self.checked_item.draw_description(350, 500)
+                self.checked_item.draw_title(SECOND_COLUMN_X, self.y)
+                description_height = self.checked_item.draw_description(SECOND_COLUMN_X, self.y - 50)
                 self.checked_item.is_checked = True
-                self.use_consumable_button.draw(350, self.y - description_height - 55)
+                self.use_consumable_button.draw(350, self.y - description_height - 75)
         return cursor_y
 
 class Consumable:
@@ -179,6 +180,30 @@ class Consumable:
 
         consumable_text.draw()
 
+    def draw_title(self, x, y):
+        title = self.text.upper()
+        underscores = "_" * len(title)
+        arcade.Text(
+            title,
+            x,
+            y,
+            TEXT_COLOR,
+            font_size=FONT_SIZE,
+            font_name=FONT_NAME,
+            anchor_x="left",
+            anchor_y="top"
+        ).draw()
+        arcade.Text(
+            underscores,
+            x,
+            y - 10,
+            TEXT_COLOR,
+            font_size=FONT_SIZE,
+            font_name=FONT_NAME,
+            anchor_x="left",
+            anchor_y="top"
+        ).draw()
+
     def draw_description(self, x, y):
         description = arcade.Text(
             self.description,
@@ -188,7 +213,7 @@ class Consumable:
             font_size=FONT_SIZE,
             font_name=FONT_NAME,
             multiline=True,
-            width=250,
+            width=550,
             anchor_x="left",
             anchor_y="top"
         )
