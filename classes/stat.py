@@ -14,7 +14,7 @@ class Stat:
         self.color = TEXT_COLOR
 
         self.start_flashing = 0
-        self.flashing_color = None
+        self.flashing_color = arcade.color.RED
 
     def set(self, value):
         self.value = value
